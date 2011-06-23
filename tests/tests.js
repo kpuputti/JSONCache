@@ -4,7 +4,6 @@
 /*global jQuery: false, module: false, test: false, expect: false,
   equals: false, window: false, ok: false */
 
-
 (function ($) {
 
     module('JSONCache');
