@@ -39,3 +39,13 @@ Usage
             // handle data
         }
     });
+
+TODO
+----
+
+- Basic caching functionality.
+- Removing old entries based on cache size.
+  - Have to keep track of the cache size.
+- Add support for trying to fetch the requested resource (not in
+  cache) multiple times to delay errors with small network
+  interrruptions.
