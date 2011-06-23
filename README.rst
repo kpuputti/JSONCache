@@ -6,6 +6,9 @@ JSONCache is a caching layer for fetching JSON data with jQuery. It
 uses HTML5's window.localStorage to cache fetched JSON data to avoid
 unnecessary network requests.
 
+The primary goal of the library is to minimize network requests for
+mobile devices.
+
 Requirements
 ------------
 
@@ -14,6 +17,8 @@ Requirements
 - JSON.parse and JSON.stringify (available in the latest browsers or
   e.g. with json2.js available at
   https://github.com/douglascrockford/JSON-js)
+
+- window.localStorage (available in the latest browsers)
 
 Usage
 -----
