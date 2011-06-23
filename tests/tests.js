@@ -9,7 +9,7 @@
     module('JSONCache');
 
     test('Requirements.', function () {
-        expect(4);
+        expect(5);
 
         // Detect native JSON parser support.
         var jsonSupported = function () {
@@ -30,7 +30,8 @@
         equals(typeof window.jQuery, 'function', 'jQuery is required');
         equals(jsonSupported(), true, 'JSON is required');
         equals(localStorageSupported(), true, 'localStorage is required');
-        equals(typeof window.JSONCache, 'function', 'JSONCache is required');
+        equals(typeof window.JSONCache, 'object', 'JSONCache is required');
+        equals(typeof window.JSONCache.getCachedJSON, 'function', 'JSONCache is required');
     });
 
 }(jQuery));
