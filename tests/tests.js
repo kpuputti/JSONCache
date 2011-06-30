@@ -68,10 +68,10 @@
         var proxyMockCallCount = 0;
 
         // Mock the json proxy to avoid networking.
-        JSONCache.getJSONProxy = function (url, callback) {
+        JSONCache.getJSONProxy = function (url, options) {
             proxyMockCallCount++;
             if (url === 'data.json') {
-                callback(testData);
+                options.success(testData);
             }
         };
 

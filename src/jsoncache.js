@@ -52,8 +52,8 @@
     JSONCache.settings = settings;
 
     // Provide the proxy function for testing to mock the real jQuery.getJSON calls.
-    JSONCache.getJSONProxy = function (url, callback) {
-        $.getJSON(url, callback);
+    JSONCache.getJSONProxy = function (url, options) {
+        $.ajax(url, options);
     };
 
     JSONCache.getCachedJSON = function (url, options) {
@@ -66,11 +66,16 @@
             success(JSON.parse(cachedData));
         } else {
             log('Value not found in cache fetching data from url:', url);
-            JSONCache.getJSONProxy(url, function (data) {
+
+            // Wrap the success function to cache the data.
+            options.success = function (data) {
                 log('Fetched data, adding to cache for url:', url);
                 window.localStorage[key] = JSON.stringify(data);
                 success(data);
-            });
+            };
+            // Assure a json datatype.
+            options.dataType = 'json';
+            JSONCache.getJSONProxy(url, options);
         }
     };
 
