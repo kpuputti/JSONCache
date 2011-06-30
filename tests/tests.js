@@ -29,7 +29,7 @@
     var eq = strictEqual;
 
     test('Requirements.', function () {
-        expect(6);
+        expect(7);
 
         // Detect native JSON parser support.
         var jsonSupported = function () {
@@ -53,6 +53,7 @@
         eq(typeof JSONCache, 'object', 'JSONCache is required');
         eq(typeof JSONCache.getCachedJSON, 'function', 'JSONCache is required');
         eq(JSONCache.settings.browserOk, true, 'JSONCache.browserOk');
+        eq(JSONCache.settings.prefix, 'JSONCache', 'JSONCache prefix must match the one used in tests.');
     });
 
     test('Basic localStorage functionality', function () {
@@ -95,6 +96,58 @@
                 stop();
             }
         });
+    });
+
+    // JSONCache.clear
+    test('Cache item clearing with empty cache.', function () {
+        expect(2);
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the beginning.');
+        JSONCache.clear('http://example.org/key?param1=a%20b+c#hash-123');
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the end.');
+    });
+    test('Whole cache clearing with empty cache.', function () {
+        expect(2);
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the beginning.');
+        JSONCache.clear();
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the end.');
+    });
+    test('Cache item clearing with items in the cache.', function () {
+        expect(3);
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the beginning.');
+
+        var dataKey = 'JSONCache data http://example.org/key?param1=a%20b+c#hash-123';
+        var timeKey = 'JSONCache time http://example.org/key?param1=a%20b+c#hash-123';
+        window.localStorage[dataKey] = 'my dätä';
+        window.localStorage[timeKey] = '123';
+
+        window.localStorage['öther kéy'] = 'öther dätä';
+
+        // Remove a certain item from the cache.
+        JSONCache.clear('http://example.org/key?param1=a%20b+c#hash-123');
+
+        eq(window.localStorage.length, 1, 'There should be one item in the localStorage.');
+        eq(window.localStorage['öther kéy'], 'öther dätä', 'Correct data should be in the localStorage.');
+
+    });
+    test('Whole cache clearing with several items in the cache.', function () {
+        expect(3);
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the beginning.');
+
+        var dataKey = 'JSONCache data http://example.org/key?param1=a%20b+c#hash-123';
+        var timeKey = 'JSONCache time http://example.org/key?param1=a%20b+c#hash-123';
+        window.localStorage[dataKey] = 'my dätä';
+        window.localStorage[timeKey] = '123';
+
+        window.localStorage['JSONCache data http://example.org/data'] = 'my dätä 2';
+        window.localStorage['JSONCache time http://example.org/time'] = '1234';
+
+        window.localStorage['öther kéy'] = 'öther dätä';
+
+        // Clear the whole cache.
+        JSONCache.clear();
+
+        eq(window.localStorage.length, 1, 'There should be one item in the localStorage.');
+        eq(window.localStorage['öther kéy'], 'öther dätä', 'Correct data should be in the localStorage.');
     });
 
 }(jQuery));

@@ -21,8 +21,7 @@
         version: '#VERSION#',
 
         debug: true,
-        prefix: 'JSONCache',
-        keySeparator: ' '
+        prefix: 'JSONCache'
     };
 
     var log = function () {
@@ -51,16 +50,56 @@
     var JSONCache = {};
     JSONCache.settings = settings;
 
+    // Remove a certain item from the localStorage cache.
+    // If the url is given as an argument, then only that
+    // particular item is removed, otherwise all the items
+    // stored by JSONCache are removed.
+    JSONCache.clear = function (url) {
+        if (url) {
+            // Remove a particular item.
+            window.localStorage.removeItem(settings.prefix + ' data ' + url);
+            window.localStorage.removeItem(settings.prefix + ' time ' + url);
+        } else {
+            // Remove all items (stored by JSONCache) if no url was specified.
+
+            // Regexp to match keys stored with JSONCache.
+            var cacheKeyRe = new RegExp('^' + settings.prefix + ' (data|time) ');
+            var i, key;
+            var len = window.localStorage.length;
+            var keysToBeRemoved = [];
+
+            // List all keys that are stored with JSONCache
+            for (i = 0; i < len; ++i) {
+                key = window.localStorage.key(i);
+                if (cacheKeyRe.test(key)) {
+                    keysToBeRemoved.push(key);
+                }
+            }
+            // Remove all listed keys.
+            len = keysToBeRemoved.length;
+            for (i = 0; i < len; ++i) {
+                window.localStorage.removeItem(keysToBeRemoved[i]);
+            }
+        }
+    };
+
     // Provide the proxy function for testing to mock the real jQuery.getJSON calls.
     JSONCache.getJSONProxy = function (url, options) {
         $.ajax(url, options);
     };
 
+    JSONCache.getTime = function () {
+        return (new Date()).getTime();
+    };
+
     JSONCache.getCachedJSON = function (url, options) {
+        var now = (new Date()).getTime();
         var success = options.success;
-        var key = settings.prefix + settings.keySeparator + 'data' +
-            settings.keySeparator + url;
-        var cachedData = window.localStorage[key];
+        var dataKey = settings.prefix + ' data ' + url;
+        var timeKey = settings.prefix + ' time ' + url;
+        var cachedData = window.localStorage[dataKey];
+        var cachedTime = window.localStorage[timeKey];
+
         if (cachedData) {
             log('Value found from cache for url:', url);
             success(JSON.parse(cachedData));
@@ -70,7 +109,7 @@
             // Wrap the success function to cache the data.
             options.success = function (data) {
                 log('Fetched data, adding to cache for url:', url);
-                window.localStorage[key] = JSON.stringify(data);
+                window.localStorage[dataKey] = JSON.stringify(data);
                 success(data);
             };
             // Assure a json datatype.
