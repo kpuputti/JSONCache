@@ -2,14 +2,19 @@
   regexp: true, plusplus: false, bitwise: true, newcap: true, maxerr: 50,
   indent: 4 */
 /*global jQuery: false, module: false, test: false, expect: false,
-  equals: false, window: false, ok: false */
+  strictEqual: false, window: false, ok: false */
 
 (function ($) {
 
     module('JSONCache');
 
+    var JSONCache = window.JSONCache;
+
+    // Alias to the strict comparison function of QUnit (using ===).
+    var eq = strictEqual;
+
     test('Requirements.', function () {
-        expect(5);
+        expect(6);
 
         // Detect native JSON parser support.
         var jsonSupported = function () {
@@ -27,11 +32,12 @@
             }
         };
 
-        equals(typeof window.jQuery, 'function', 'jQuery is required');
-        equals(jsonSupported(), true, 'JSON is required');
-        equals(localStorageSupported(), true, 'localStorage is required');
-        equals(typeof window.JSONCache, 'object', 'JSONCache is required');
-        equals(typeof window.JSONCache.getCachedJSON, 'function', 'JSONCache is required');
+        eq(typeof window.jQuery, 'function', 'jQuery is required');
+        eq(jsonSupported(), true, 'JSON is required');
+        eq(localStorageSupported(), true, 'localStorage is required');
+        eq(typeof JSONCache, 'object', 'JSONCache is required');
+        eq(typeof JSONCache.getCachedJSON, 'function', 'JSONCache is required');
+        eq(JSONCache.settings.browserOk, true, 'JSONCache.browserOk');
     });
 
 }(jQuery));
