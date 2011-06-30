@@ -31,10 +31,12 @@ Usage
 3. Use the JSONCache.getCachedJSON function instead of jQuery.getJSON
    to fetch your data:
 
+JSONCache.getCachedJSON attempts to provide the same API as the
+jQuery.ajax function.
+
 ::
 
-    JSONCache.getCachedJSON({
-        url: 'http://example.com/data.json',
+    JSONCache.getCachedJSON('http://example.com/data.json', {
         success: function (data) {
             // handle data
         }
