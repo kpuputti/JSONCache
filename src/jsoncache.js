@@ -104,6 +104,33 @@
         }
     };
 
+    JSONCache.purgeOldest = function () {
+        var timeKeyRe = new RegExp('^' + settings.prefix + ' time ');
+        var timeKeyOldest;
+        var timeOldest = null;
+
+        var key, time;
+        var len = window.localStorage.length;
+
+        for (var i = 0; i < len; ++i) {
+            key = window.localStorage.key(i);
+            if (!timeKeyRe.test(key)) {
+                // Skip on other keys than JSONCache time keys.
+                continue;
+            }
+            time = parseInt(window.localStorage[key], 10);
+            if (!isNaN(time) && (timeOldest === null || time < timeOldest)) {
+                timeKeyOldest = key;
+                timeOldest = time;
+            }
+        }
+        // Remove the oldest item data and time records.
+        if (timeOldest !== null) {
+            window.localStorage.removeItem(timeKeyOldest.replace(' time ', ' data '));
+            window.localStorage.removeItem(timeKeyOldest);
+        }
+    };
+
     // Provide the proxy function for testing to mock the real jQuery.getJSON calls.
     JSONCache._getJSONProxy = function (url, options) {
         $.ajax(url, options);

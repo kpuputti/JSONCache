@@ -166,4 +166,72 @@
         eq(window.localStorage['öther kéy'], 'öther dätä', 'Correct data should be in the localStorage.');
     });
 
+    test('Test oldest item removing with empty cache.', function () {
+        expect(2);
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the beginning.');
+        JSONCache.purgeOldest();
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the end.');
+    });
+    test('Test oldest item removing with one item in the cache.', function () {
+        expect(2);
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the beginning.');
+
+        window.localStorage['JSONCache data http://example.org/data'] = 'söme dätä';
+        window.localStorage['JSONCache time http://example.org/data'] = '123';
+
+        JSONCache.purgeOldest();
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the end.');
+    });
+    test('Test oldest item removing with several items in the cache.', function () {
+        expect(6);
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the beginning.');
+
+        window.localStorage['JSONCache data http://example.org/data1'] = 'söme dätä 1';
+        window.localStorage['JSONCache time http://example.org/data1'] = '1001';
+        window.localStorage['JSONCache data http://example.org/data2'] = 'söme dätä 2';
+        window.localStorage['JSONCache time http://example.org/data2'] = '1002';
+        window.localStorage['JSONCache data http://example.org/data3'] = 'söme dätä 3';
+        window.localStorage['JSONCache time http://example.org/data3'] = '1003';
+
+        JSONCache.purgeOldest();
+
+        eq(window.localStorage.length, 4, 'There should be four items in localStorage.');
+        eq(window.localStorage['JSONCache data http://example.org/data2'], 'söme dätä 2',
+           'Correct data should be in localStorage.');
+        eq(window.localStorage['JSONCache time http://example.org/data2'], '1002',
+           'Correct data should be in localStorage.');
+        eq(window.localStorage['JSONCache data http://example.org/data3'], 'söme dätä 3',
+           'Correct data should be in localStorage.');
+        eq(window.localStorage['JSONCache time http://example.org/data3'], '1003',
+           'Correct data should be in localStorage.');
+    });
+    test('Test oldest item removing with several items (including non JSONCache items).', function () {
+        expect(6);
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the beginning.');
+
+        window.localStorage['JSONCache data http://example.org/data1'] = 'söme dätä 1';
+        window.localStorage['JSONCache time http://example.org/data1'] = '1001';
+        window.localStorage['JSONCache data http://example.org/data2'] = 'söme dätä 2';
+        window.localStorage['JSONCache time http://example.org/data2'] = '1002';
+        window.localStorage['JSONCache data http://example.org/data3'] = 'söme dätä 3';
+        window.localStorage['JSONCache time http://example.org/data3'] = '1003';
+
+        window.localStorage['öther key 1'] = 'öther dätä 1';
+        window.localStorage['öther key 2'] = 'öther dätä 2';
+
+        // Clear two oldest items.
+        JSONCache.purgeOldest();
+        JSONCache.purgeOldest();
+
+        eq(window.localStorage.length, 4, 'There should be four items in localStorage.');
+        eq(window.localStorage['JSONCache data http://example.org/data3'], 'söme dätä 3',
+           'Correct data should be in localStorage.');
+        eq(window.localStorage['JSONCache time http://example.org/data3'], '1003',
+           'Correct data should be in localStorage.');
+        eq(window.localStorage['öther key 1'], 'öther dätä 1',
+           'Correct data should be in localStorage.');
+        eq(window.localStorage['öther key 2'], 'öther dätä 2',
+           'Correct data should be in localStorage.');
+    });
+
 }(jQuery));
