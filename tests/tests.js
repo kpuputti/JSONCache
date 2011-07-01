@@ -71,17 +71,22 @@
     });
 
     asyncTest('Basic fetch with an empty localStorage.', function () {
-        expect(5);
+        expect(7);
         start();
 
         var proxyMockCallCount = 0;
-
         // Mock the json proxy to avoid networking.
         JSONCache._getJSONProxy = function (url, options) {
             proxyMockCallCount++;
             if (url === 'data.json') {
                 options.success(testData);
             }
+        };
+        var timeMockCallCount = 0;
+        // Mock the timestamp function for a static timestamp.
+        JSONCache._getTime = function () {
+            timeMockCallCount++;
+            return '1234567890123';
         };
 
         // Initial conditions.
@@ -99,8 +104,11 @@
                 }, 'Correct test data should be returned.');
                 deepEqual(data, JSON.parse(window.localStorage['JSONCache data data.json']),
                           'localStorage should be populated with the correct data.');
+                eq(window.localStorage['JSONCache time data.json'], '1234567890123',
+                   'Timestamp should be the one returned by the static mock function.');
                 eq(proxyMockCallCount, 1, 'Mocked json proxy should be called once.');
-                eq(window.localStorage.length, 1, 'There should be only one item in the localStorage.');
+                eq(timeMockCallCount, 1, 'Mocked timestamp function should be called once.');
+                eq(window.localStorage.length, 2, 'There should be two items in the localStorage.');
                 stop();
             }
         });
