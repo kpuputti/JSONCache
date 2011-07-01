@@ -9,7 +9,7 @@
 
     var testData;
 
-    QUnit.testStart = function () {
+    QUnit.reset = function () {
         try {
             window.localStorage.clear();
         } catch (e) {
@@ -25,6 +25,7 @@
             "Weird väl": 666
         };
     };
+    QUnit.reset();
 
     module('JSONCache');
 
