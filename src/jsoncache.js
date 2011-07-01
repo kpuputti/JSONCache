@@ -6,7 +6,7 @@
  * See README.rst at https://github.com/kpuputti/JSONCache
  * for requirements and usage.
  */
-/*jslint white: true, devel: true, onevar: false, undef: true, nomen: true,
+/*jslint white: true, devel: true, onevar: false, undef: true, nomen: false,
   regexp: true, plusplus: false, bitwise: true, newcap: true, maxerr: 50,
   indent: 4 */
 /*global jQuery: false, window: false */
@@ -84,7 +84,7 @@
     };
 
     // Provide the proxy function for testing to mock the real jQuery.getJSON calls.
-    JSONCache.getJSONProxy = function (url, options) {
+    JSONCache._getJSONProxy = function (url, options) {
         $.ajax(url, options);
     };
 
@@ -114,7 +114,7 @@
             };
             // Assure a json datatype.
             options.dataType = 'json';
-            JSONCache.getJSONProxy(url, options);
+            JSONCache._getJSONProxy(url, options);
         }
     };
 

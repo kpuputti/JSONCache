@@ -1,4 +1,4 @@
-/*jslint white: true, devel: true, onevar: false, undef: true, nomen: true,
+/*jslint white: true, devel: true, onevar: false, undef: true, nomen: false,
   regexp: true, plusplus: false, bitwise: true, newcap: true, maxerr: 50,
   indent: 4 */
 /*global jQuery: false, module: false, test: false, expect: false,
@@ -10,7 +10,12 @@
     var testData;
 
     QUnit.testStart = function () {
-        window.localStorage.clear();
+        try {
+            window.localStorage.clear();
+        } catch (e) {
+            // Fail silently if localStorage is not supported.
+            // Support is checked in the first test case.
+        }
         testData = {
             "success": true,
             "data": [
@@ -57,7 +62,9 @@
     });
 
     test('Basic localStorage functionality', function () {
-        expect(1);
+        expect(2);
+        // Initial conditions.
+        eq(window.localStorage.length, 0, 'localStorage should be empty.');
         window.localStorage.test = 'åäö';
         eq(window.localStorage.test, 'åäö', 'Value should be saved in the localStorage.');
     });
@@ -69,7 +76,7 @@
         var proxyMockCallCount = 0;
 
         // Mock the json proxy to avoid networking.
-        JSONCache.getJSONProxy = function (url, options) {
+        JSONCache._getJSONProxy = function (url, options) {
             proxyMockCallCount++;
             if (url === 'data.json') {
                 options.success(testData);
