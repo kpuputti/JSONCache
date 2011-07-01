@@ -20,7 +20,20 @@
         // This is expanded by the build process from the VERSION.txt file.
         version: '#VERSION#',
 
+        // Flag to see console.log calls.
         debug: true,
+
+        // Cache prefix for all localStorage keys.
+        //
+        // Two kinds of keys are stored:
+        //     1. '$prefix data $url'
+        //     2. '$prefix time $url'
+        // where $prefix is the cache key prefix and $url is the given
+        // url to be cached.
+        //
+        // The values in these two keys are the strigified JSON data
+        // in the data key, and the timestamp of the cache addition in
+        // the tie key.
         prefix: 'JSONCache'
     };
 
