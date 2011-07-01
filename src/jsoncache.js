@@ -59,6 +59,14 @@
         return jsonOk && localStorageOk;
     }());
 
+    var addToCache = function (key, data) {
+        try {
+            window.localStorage[key] = data;
+        } catch (e) {
+            log('Error adding data to localStorage, quota might be full.');
+        }
+    };
+
     // Namespace for all the code.
     var JSONCache = {};
     JSONCache.settings = settings;
@@ -103,7 +111,7 @@
 
     // Wrap the timestamp generation for easier mocking in the tests.
     JSONCache._getTime = function () {
-        return (new Date()).getTime();
+        return (new Date()).getTime().toString();
     };
 
     JSONCache.getCachedJSON = function (url, options) {
@@ -123,7 +131,8 @@
             // Wrap the success function to cache the data.
             options.success = function (data) {
                 log('Fetched data, adding to cache for url:', url);
-                window.localStorage[dataKey] = JSON.stringify(data);
+                addToCache(dataKey, JSON.stringify(data));
+                addToCache(timeKey, JSONCache._getTime());
                 success(data);
             };
             // Assure a json datatype.
