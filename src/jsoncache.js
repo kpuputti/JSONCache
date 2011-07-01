@@ -88,7 +88,8 @@
         $.ajax(url, options);
     };
 
-    JSONCache.getTime = function () {
+    // Wrap the timestamp generation for easier mocking in the tests.
+    JSONCache._getTime = function () {
         return (new Date()).getTime();
     };
 
