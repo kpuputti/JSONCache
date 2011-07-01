@@ -42,12 +42,22 @@ jQuery.ajax function.
         }
     });
 
+Testing
+-------
+
+JSONCache uses QUnit as its test framework. The tests can be run by
+opening the `tests/index.html` in the browser that you want to test
+the library in, and selecting either the development version or the
+production (minified) version tests.
+
+More about QUnit: http://docs.jquery.com/Qunit
+
 TODO
 ----
 
-- Basic caching functionality.
 - Removing old entries based on cache size.
   - Have to keep track of the cache size.
+  - Remove oldest entries based on timestamp.
 - Add support for trying to fetch the requested resource (not in
   cache) multiple times to delay errors with small network
   interrruptions.
