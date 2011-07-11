@@ -234,4 +234,33 @@
            'Correct data should be in localStorage.');
     });
 
+    test('tryCount without config', function () {
+        expect(3);
+        var tryCallCount = 0;
+        var tryCount;
+        JSONCache._tryGetJSON = function (url, options) {
+            tryCallCount++;
+            tryCount = options.tryCount;
+        };
+        JSONCache.getCachedJSON('data.json', {});
+        eq(JSONCache.settings.tryCount, 5, 'Default tryCount value should be 5.');
+        eq(tryCallCount, 1, 'JSONCache._tryGetJSON should be called once.');
+        eq(tryCount, JSONCache.settings.tryCount,
+           'The given tryCount should match the default value in settings.');
+    });
+    test('Overriden tryCount.', function () {
+        expect(2);
+        var tryCallCount = 0;
+        var tryCount;
+        JSONCache._tryGetJSON = function (url, options) {
+            tryCallCount++;
+            tryCount = options.tryCount;
+        };
+        JSONCache.getCachedJSON('data.json', {
+            tryCount: 10
+        });
+        eq(tryCallCount, 1, 'JSONCache._tryGetJSON should be called once.');
+        eq(tryCount, 10, 'tryCount should match the given value.');
+    });
+
 }(jQuery));
