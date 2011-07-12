@@ -148,9 +148,9 @@
     };
 
     // Try to fetch the JSON multiple times.
-    JSONCache._tryGetJSON = function (url, options, tryNumber) {
-        if (tryNumber >= settings.numTries) {
-            log('Tried fetching', tryNumber, 'times already, returning.');
+    JSONCache._tryGetJSON = function (url, options, tryNumber, waitTime) {
+        if (tryNumber > settings.numTries) {
+            log('Tried fetching', tryNumber - 1, 'times already, returning.');
             if (typeof options.JSONCacheError === 'function') {
                 options.JSONCacheError('timeout');
             }
@@ -160,9 +160,13 @@
         options.error = function (jqXHR, textStatus, errorThrown) {
             log('Ajax error with status:', textStatus);
             window.setTimeout(function () {
-                JSONCache._tryGetJSON(url, options, tryNumber + 1);
-            }, settings.waitTime);
+                JSONCache._tryGetJSON(url, options, tryNumber + 1, waitTime * 2);
+            }, waitTime);
         };
+
+        if (typeof options.retryHook === 'function') {
+            options.retryHook(tryNumber);
+        }
 
         JSONCache._getJSONProxy(url, options);
     };
@@ -193,8 +197,7 @@
 
             // Assure a json datatype.
             options.dataType = 'json';
-            log('Trying to fetch JSON multiple times.');
-            JSONCache._tryGetJSON(url, options, 0);
+            JSONCache._tryGetJSON(url, options, 1, settings.waitTime);
         }
     };
 

@@ -8,6 +8,8 @@
 (function ($) {
 
     var JSONCache = window.JSONCache;
+    var _numTries = JSONCache.settings.numTries;
+    var _waitTime = JSONCache.settings.waitTime;
     var _getJSONProxy = JSONCache._getJSONProxy;
     var _getTime = JSONCache._getTime;
     var _tryGetJSON = JSONCache._tryGetJSON;
@@ -21,7 +23,10 @@
             // Support is checked in the first test case.
         }
 
-        // Put back the original functions after injecting the mocks.
+        // Put back the original settings and functions after
+        // injecting the mocks.
+        JSONCache.settings.numTries = _numTries;
+        JSONCache.settings.waitTime = _waitTime;
         JSONCache._getJSONProxy = _getJSONProxy;
         JSONCache._getTime = _getTime;
         JSONCache._tryGetJSON = _tryGetJSON;
@@ -266,6 +271,39 @@
             JSONCacheError: function (status) {
                 eq(status, 'timeout', 'Error status should be correct.');
                 eq(proxyCallCount, 5, 'Proxy function should be called 5 times.');
+                start();
+            }
+        });
+
+    });
+    asyncTest('Timeout for all fetching tries with changed number of tries.', function () {
+        expect(3);
+
+        // Set shorter wait time for faster tests.
+        JSONCache.settings.waitTime = 10;
+        JSONCache.settings.numTries = 6;
+
+        // Mock the proxy function to always time out.
+        var proxyCallCount = 0;
+        JSONCache._getJSONProxy = function (url, options) {
+            proxyCallCount++;
+            window.setTimeout(function () {
+                options.error(null, 'timeout', null);
+            }, 10);
+        };
+
+        var retryArgs = [];
+        var retryHook = function (tryNumber) {
+            retryArgs.push(tryNumber);
+        };
+
+        JSONCache.getCachedJSON('data.json', {
+            retryHook: retryHook,
+            JSONCacheError: function (status) {
+                eq(status, 'timeout', 'Error status should be correct.');
+                eq(proxyCallCount, 6, 'Proxy function should be called 5 times.');
+                deepEqual(retryArgs, [1, 2, 3, 4, 5, 6],
+                          'The retry hook function should be called before each try.');
                 start();
             }
         });
