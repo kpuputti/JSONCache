@@ -85,6 +85,3 @@ TODO
   - Catch browser quota errors (only supported on some browsers.)
 
 - Add better support for user defined error handling.
-
-- Remove the ability to change the cache prefix which brings
-  unnecessary complexity.

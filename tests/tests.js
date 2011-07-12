@@ -49,7 +49,7 @@
     var eq = strictEqual;
 
     test('Requirements.', function () {
-        expect(10);
+        expect(9);
 
         // Detect native JSON parser support.
         var jsonSupported = function () {
@@ -74,7 +74,6 @@
         eq(typeof JSONCache.getCachedJSON, 'function', 'JSONCache is required');
 
         eq(JSONCache.settings.browserOk, true, 'JSONCache.browserOk');
-        eq(JSONCache.settings.prefix, 'JSONCache', 'JSONCache prefix must match the one used in tests.');
 
         eq(JSONCache.settings.numTries, 5, 'numTries should be the one expected.');
         eq(JSONCache.settings.waitTime, 200, 'waitTime should be the one expected.');

@@ -23,19 +23,6 @@
         // Flag to see console.log calls.
         debug: true,
 
-        // Cache prefix for all localStorage keys.
-        //
-        // Two kinds of keys are stored:
-        //     1. '$prefix data $url'
-        //     2. '$prefix time $url'
-        // where $prefix is the cache key prefix and $url is the given
-        // url to be cached.
-        //
-        // The values in these two keys are the strigified JSON data
-        // in the data key, and the timestamp of the cache addition in
-        // the tie key.
-        prefix: 'JSONCache',
-
         // Number of times the JSON is attempted to fetch on network errors.
         numTries: 5,
 
@@ -92,13 +79,13 @@
     JSONCache.clear = function (url) {
         if (url) {
             // Remove a particular item.
-            window.localStorage.removeItem(settings.prefix + ' data ' + url);
-            window.localStorage.removeItem(settings.prefix + ' time ' + url);
+            window.localStorage.removeItem('JSONCache data ' + url);
+            window.localStorage.removeItem('JSONCache time ' + url);
         } else {
             // Remove all items (stored by JSONCache) if no url was specified.
 
             // Regexp to match keys stored with JSONCache.
-            var cacheKeyRe = new RegExp('^' + settings.prefix + ' (data|time) ');
+            var cacheKeyRe = /^JSONCache (data|time) /;
             var i, key;
             var len = window.localStorage.length;
             var keysToBeRemoved = [];
@@ -120,7 +107,7 @@
 
     // Remove all expired items from the cache.
     JSONCache.clean = function () {
-        var timeKeyRe = new RegExp('^' + settings.prefix + ' time (.*)$');
+        var timeKeyRe = /^JSONCache time ([\S]+)$/;
         var key, match;
         var urlsToRemove = [];
         var i;
@@ -139,7 +126,7 @@
     };
 
     JSONCache.purgeOldest = function () {
-        var timeKeyRe = new RegExp('^' + settings.prefix + ' time ');
+        var timeKeyRe = /^JSONCache time /;
         var timeKeyOldest;
         var timeOldest = null;
 
@@ -206,8 +193,8 @@
         options = options || {};
         var now = (new Date()).getTime();
         var success = options.success;
-        var dataKey = settings.prefix + ' data ' + url;
-        var timeKey = settings.prefix + ' time ' + url;
+        var dataKey = 'JSONCache data ' + url;
+        var timeKey = 'JSONCache time ' + url;
         var cachedData = window.localStorage[dataKey];
         var cachedTime = window.localStorage[timeKey];
 
