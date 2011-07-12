@@ -34,6 +34,8 @@ Usage
 JSONCache.getCachedJSON attempts to provide the same API as the
 jQuery.ajax function.
 
+Basic example:
+
 ::
 
     JSONCache.getCachedJSON('http://example.com/data.json', {
@@ -41,6 +43,25 @@ jQuery.ajax function.
             // handle data
         }
     });
+
+Example with error hooks to display status info to user:
+
+::
+
+    // Message container to show info to user.
+    var message = $('#message');
+
+    JSONCache.getCachedJSON(
+        errorHook: function (jqXHR, textStatus, errorThrown, tryNumber) {
+            message.text('Failed fetch number ' + tryNumber + '. Trying again...');
+        },
+        JSONCacheError: function (status) {
+            message.text('Network failure, cannot fetch data.');
+        },
+        success: function (data) {
+            message.text('Data fetched successfully!');
+        }
+    );
 
 Testing
 -------
@@ -58,6 +79,6 @@ TODO
 - Removing old entries based on cache size.
   - Have to keep track of the cache size.
   - Remove oldest entries based on timestamp.
-- Add support for trying to fetch the requested resource (not in
-  cache) multiple times to delay errors with small network
-  interrruptions.
+  - Catch browser quota errors (only supported on some browsers.)
+
+- Add better support for user defined error handling.
