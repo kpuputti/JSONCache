@@ -77,8 +77,11 @@ TODO
 ----
 
 - Removing old entries based on cache size.
+
   - Have to keep track of the cache size.
+
   - Remove oldest entries based on timestamp.
+
   - Catch browser quota errors (only supported on some browsers.)
 
 - Add better support for user defined error handling.
