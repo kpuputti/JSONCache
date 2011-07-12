@@ -7,6 +7,10 @@
 
 (function ($) {
 
+    var JSONCache = window.JSONCache;
+    var _getJSONProxy = JSONCache._getJSONProxy;
+    var _getTime = JSONCache._getTime;
+    var _tryGetJSON = JSONCache._tryGetJSON;
     var testData;
 
     QUnit.reset = function () {
@@ -16,6 +20,12 @@
             // Fail silently if localStorage is not supported.
             // Support is checked in the first test case.
         }
+
+        // Put back the original functions after injecting the mocks.
+        JSONCache._getJSONProxy = _getJSONProxy;
+        JSONCache._getTime = _getTime;
+        JSONCache._tryGetJSON = _tryGetJSON;
+
         testData = {
             "success": true,
             "data": [
@@ -29,7 +39,6 @@
 
     module('JSONCache');
 
-    var JSONCache = window.JSONCache;
 
     // Alias to the strict comparison function of QUnit (using ===).
     var eq = strictEqual;
@@ -72,7 +81,6 @@
 
     asyncTest('Basic fetch with an empty localStorage.', function () {
         expect(7);
-        start();
 
         var proxyMockCallCount = 0;
         // Mock the json proxy to avoid networking.
@@ -109,7 +117,7 @@
                 eq(proxyMockCallCount, 1, 'Mocked json proxy should be called once.');
                 eq(timeMockCallCount, 1, 'Mocked timestamp function should be called once.');
                 eq(window.localStorage.length, 2, 'There should be two items in the localStorage.');
-                stop();
+                start();
             }
         });
     });
@@ -234,33 +242,34 @@
            'Correct data should be in localStorage.');
     });
 
-    test('tryCount without config', function () {
-        expect(3);
-        var tryCallCount = 0;
-        var tryCount;
-        JSONCache._tryGetJSON = function (url, options) {
-            tryCallCount++;
-            tryCount = options.tryCount;
-        };
-        JSONCache.getCachedJSON('data.json', {});
-        eq(JSONCache.settings.tryCount, 5, 'Default tryCount value should be 5.');
-        eq(tryCallCount, 1, 'JSONCache._tryGetJSON should be called once.');
-        eq(tryCount, JSONCache.settings.tryCount,
-           'The given tryCount should match the default value in settings.');
+    test('Default numTries in settings.', function () {
+        expect(1);
+        eq(JSONCache.settings.numTries, 5, 'Default tryCount value should be 5.');
     });
-    test('Overriden tryCount.', function () {
+
+    asyncTest('Timeout for all fetching tries.', function () {
         expect(2);
-        var tryCallCount = 0;
-        var tryCount;
-        JSONCache._tryGetJSON = function (url, options) {
-            tryCallCount++;
-            tryCount = options.tryCount;
+
+        // Set shorter wait time for faster tests.
+        JSONCache.settings.waitTime = 10;
+
+        // Mock the proxy function to always time out.
+        var proxyCallCount = 0;
+        JSONCache._getJSONProxy = function (url, options) {
+            proxyCallCount++;
+            window.setTimeout(function () {
+                options.error(null, 'timeout', null);
+            }, 10);
         };
+
         JSONCache.getCachedJSON('data.json', {
-            tryCount: 10
+            JSONCacheError: function (status) {
+                eq(status, 'timeout', 'Error status should be correct.');
+                eq(proxyCallCount, 5, 'Proxy function should be called 5 times.');
+                start();
+            }
         });
-        eq(tryCallCount, 1, 'JSONCache._tryGetJSON should be called once.');
-        eq(tryCount, 10, 'tryCount should match the given value.');
+
     });
 
 }(jQuery));

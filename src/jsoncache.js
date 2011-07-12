@@ -36,8 +36,11 @@
         // the tie key.
         prefix: 'JSONCache',
 
-        // Number of times the JSON is attempted to fetch on network timeouts.
-        tryCount: 5
+        // Number of times the JSON is attempted to fetch on network errors.
+        numTries: 5,
+
+        // Time in milliseconds to wait after each timeout before a re-try.
+        waitTime: 200
     };
 
     var log = function () {
@@ -145,33 +148,27 @@
     };
 
     // Try to fetch the JSON multiple times.
-    JSONCache._tryGetJSON = function (url, options) {
-        var tryCount = options.tryCount || 0;
-        var error = options.originalError;
-
-        // Wrap the error function to allow re-trying fetching on
-        // request timeouts.
-        options.error = function (jqXHR, textStatus, errorThrown) {
-            if (textStatus === 'timeout') {
-                log('Request timed out,', tryCount, 'tries left');
-                if (tryCount) {
-                    // TODO: increase the timeout on successive tries?
-                    options.tryCount--;
-                    JSONCache._tryGetJSON(url, options);
-                } else if (typeof error === 'function') {
-                    error(jqXHR, textStatus, errorThrown);
-                }
-            } else if (typeof error === 'function') {
-                error(jqXHR, textStatus, errorThrown);
+    JSONCache._tryGetJSON = function (url, options, tryNumber) {
+        if (tryNumber >= settings.numTries) {
+            log('Tried fetching', tryNumber, 'times already, returning.');
+            if (typeof options.JSONCacheError === 'function') {
+                options.JSONCacheError('timeout');
             }
+            return;
+        }
+
+        options.error = function (jqXHR, textStatus, errorThrown) {
+            log('Ajax error with status:', textStatus);
+            window.setTimeout(function () {
+                JSONCache._tryGetJSON(url, options, tryNumber + 1);
+            }, settings.waitTime);
         };
 
-        if (tryCount) {
-            JSONCache._getJSONProxy(url, options);
-        }
+        JSONCache._getJSONProxy(url, options);
     };
 
     JSONCache.getCachedJSON = function (url, options) {
+        options = options || {};
         var now = (new Date()).getTime();
         var success = options.success;
         var dataKey = settings.prefix + ' data ' + url;
@@ -192,14 +189,12 @@
                 addToCache(timeKey, JSONCache._getTime());
                 success(data);
             };
-            // Change the original error function name to allow wrapping it.
-            // TODO: add support for globally defined ajax error handling functions.
-            options.originalError = options.error;
-            options.tryCount = typeof options.tryCount === 'number' ?
-                options.tryCount : settings.tryCount;
+            // TODO: add support for user defined error function handling.
+
             // Assure a json datatype.
             options.dataType = 'json';
-            JSONCache._tryGetJSON(url, options);
+            log('Trying to fetch JSON multiple times.');
+            JSONCache._tryGetJSON(url, options, 0);
         }
     };
 
