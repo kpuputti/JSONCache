@@ -318,15 +318,15 @@
         JSONCache._getJSONProxy = function (url, options) {
             proxyCallCount++;
             window.setTimeout(function () {
-                options.error(null, 'timeout ' + proxyCallCount, null);
+                options.error(null, 'timeout', null);
             }, 10);
         };
 
         var errorCallCount = 0;
         var errorArgs = [];
-        var errorHook = function (jqXHR, textStatus, errorThrown) {
+        var errorHook = function (jqXHR, textStatus, errorThrown, tryNumber) {
             errorCallCount++;
-            errorArgs.push(textStatus);
+            errorArgs.push(textStatus + ' ' + tryNumber);
         };
 
         JSONCache.getCachedJSON('data.json', {
