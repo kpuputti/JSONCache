@@ -86,5 +86,5 @@ TODO
 
 - Add better support for user defined error handling.
 
-- Remove the ability to change the cache prefix which bring
+- Remove the ability to change the cache prefix which brings
   unnecessary complexity.
