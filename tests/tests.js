@@ -387,4 +387,97 @@
         });
     });
 
+    test('Cache clean with empty cache.', function () {
+        expect(2);
+        eq(window.localStorage.length, 0, 'localStorage should be empty initially.');
+        JSONCache.clean();
+        eq(window.localStorage.length, 0, 'localStorage should be empty in the end.');
+    });
+    test('Cache clean with only valid items.', function () {
+        expect(7);
+        eq(window.localStorage.length, 0, 'localStorage should be empty initially.');
+
+        JSONCache._getTime = function () {
+            return 2345678901234;
+        };
+
+        window.localStorage['JSONCache data data1'] = '{"data":"dätä 1"}';
+        window.localStorage['JSONCache time data1'] = '2345678901234';
+
+        window.localStorage['JSONCache data data2'] = '{"data":"dätä 2"}';
+        window.localStorage['JSONCache time data2'] = (2345678901234 - 5 * 60 * 1000).toString();
+
+        window.localStorage['söme öther key'] = 'söme öther dätä';
+
+        JSONCache.clean();
+
+        eq(window.localStorage.length, 5, 'All items should still be in the cache.');
+        eq(window.localStorage['JSONCache data data1'], '{"data":"dätä 1"}',
+           'Correct data should still be in the cache.');
+        eq(window.localStorage['JSONCache time data1'], '2345678901234',
+           'Correct data should still be in the cache.');
+        eq(window.localStorage['JSONCache data data2'], '{"data":"dätä 2"}',
+           'Correct data should still be in the cache.');
+        eq(window.localStorage['JSONCache time data2'], (2345678901234 - 5 * 60 * 1000).toString(),
+           'Correct data should still be in the cache.');
+        eq(window.localStorage['söme öther key'], 'söme öther dätä',
+           'Correct data should still be in the cache.');
+    });
+    test('Cache clean with only expired items.', function () {
+        expect(2);
+        eq(window.localStorage.length, 0, 'localStorage should be empty initially.');
+
+        JSONCache._getTime = function () {
+            return 2345678901234;
+        };
+
+        window.localStorage['JSONCache data data1'] = '{"data":"dätä 1"}';
+        window.localStorage['JSONCache time data1'] = '1234567890123';
+
+        window.localStorage['JSONCache data data2'] = '{"data":"dätä 2"}';
+        // Expired 1 millisecond.
+        window.localStorage['JSONCache time data2'] = (2345678901234 - 5 * 60 * 1000 - 1).toString();
+
+        JSONCache.clean();
+
+        eq(window.localStorage.length, 0, 'Cache should be empty.');
+    });
+    test('Cache clean with valid and expired items.', function () {
+        expect(7);
+        eq(window.localStorage.length, 0, 'localStorage should be empty initially.');
+
+        JSONCache._getTime = function () {
+            return 2345678901234;
+        };
+
+        window.localStorage['JSONCache data data1'] = '{"data":"dätä 1"}';
+        window.localStorage['JSONCache time data1'] = '1234567890123';
+
+        window.localStorage['JSONCache data data2'] = '{"data":"dätä 2"}';
+        // Expired 1 millisecond.
+        window.localStorage['JSONCache time data2'] = (2345678901234 - 5 * 60 * 1000 - 1).toString();
+
+        window.localStorage['JSONCache data data3'] = '{"data":"dätä 3"}';
+        window.localStorage['JSONCache time data3'] = '2345678901234';
+
+        window.localStorage['JSONCache data data4'] = '{"data":"dätä 4"}';
+        window.localStorage['JSONCache time data4'] = (2345678901234 - 5 * 60 * 1000).toString();
+
+        window.localStorage['söme öther key'] = 'söme öther dätä';
+
+        JSONCache.clean();
+
+        eq(window.localStorage.length, 5, 'Valid items should still be in the cache.');
+        eq(window.localStorage['JSONCache data data3'], '{"data":"dätä 3"}',
+           'Correct data should still be in the cache.');
+        eq(window.localStorage['JSONCache time data3'], '2345678901234',
+           'Correct data should still be in the cache.');
+        eq(window.localStorage['JSONCache data data4'], '{"data":"dätä 4"}',
+           'Correct data should still be in the cache.');
+        eq(window.localStorage['JSONCache time data4'], (2345678901234 - 5 * 60 * 1000).toString(),
+           'Correct data should still be in the cache.');
+        eq(window.localStorage['söme öther key'], 'söme öther dätä',
+           'Correct data should still be in the cache.');
+    });
+
 }(jQuery));

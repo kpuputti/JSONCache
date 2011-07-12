@@ -80,6 +80,11 @@
     var JSONCache = {};
     JSONCache.settings = settings;
 
+    var cacheItemValid = function (timestr) {
+        var time = parseInt(timestr, 10);
+        return !isNaN(time) && (time + settings.itemLifetime >= JSONCache._getTime());
+    };
+
     // Remove a certain item from the localStorage cache.
     // If the url is given as an argument, then only that
     // particular item is removed, otherwise all the items
@@ -110,6 +115,26 @@
             for (i = 0; i < len; ++i) {
                 window.localStorage.removeItem(keysToBeRemoved[i]);
             }
+        }
+    };
+
+    // Remove all expired items from the cache.
+    JSONCache.clean = function () {
+        var timeKeyRe = new RegExp('^' + settings.prefix + ' time (.*)$');
+        var key, match;
+        var urlsToRemove = [];
+        var i;
+        var len = window.localStorage.length;
+        for (i = 0; i < len; ++i) {
+            key = window.localStorage.key(i);
+            match = timeKeyRe.exec(key);
+            if (match && !cacheItemValid(window.localStorage[key])) {
+                urlsToRemove.push(match[1]);
+            }
+        }
+        len = urlsToRemove.length;
+        for (i = 0; i < len; ++i) {
+            JSONCache.clear(urlsToRemove[i]);
         }
     };
 
@@ -175,11 +200,6 @@
         }
 
         JSONCache._getJSONProxy(url, options);
-    };
-
-    var cacheItemValid = function (timestr) {
-        var time = parseInt(timestr, 10);
-        return !isNaN(time) && (time + settings.itemLifetime >= JSONCache._getTime());
     };
 
     JSONCache.getCachedJSON = function (url, options) {
