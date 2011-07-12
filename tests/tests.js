@@ -301,13 +301,46 @@
             retryHook: retryHook,
             JSONCacheError: function (status) {
                 eq(status, 'timeout', 'Error status should be correct.');
-                eq(proxyCallCount, 6, 'Proxy function should be called 5 times.');
+                eq(proxyCallCount, 6, 'Proxy function should be called the correct amount of times.');
                 deepEqual(retryArgs, [1, 2, 3, 4, 5, 6],
                           'The retry hook function should be called before each try.');
                 start();
             }
         });
-
     });
+    asyncTest('Error hook calling.', function () {
+        expect(4);
+
+        JSONCache.settings.waitTime = 10;
+
+        // Mock the proxy function to always time out.
+        var proxyCallCount = 0;
+        JSONCache._getJSONProxy = function (url, options) {
+            proxyCallCount++;
+            window.setTimeout(function () {
+                options.error(null, 'timeout ' + proxyCallCount, null);
+            }, 10);
+        };
+
+        var errorCallCount = 0;
+        var errorArgs = [];
+        var errorHook = function (jqXHR, textStatus, errorThrown) {
+            errorCallCount++;
+            errorArgs.push(textStatus);
+        };
+
+        JSONCache.getCachedJSON('data.json', {
+            errorHook: errorHook,
+            JSONCacheError: function (status) {
+                eq(status, 'timeout', 'Error status should be correct.');
+                eq(proxyCallCount, 5, 'Proxy function should be called the correct amount of times.');
+                eq(errorCallCount, 5, 'Error function should be called the correct amount of times.');
+                deepEqual(errorArgs, ['timeout 1', 'timeout 2', 'timeout 3', 'timeout 4', 'timeout 5'],
+                          'The error hook function should be called on every error.');
+                start();
+            }
+        });
+    });
+
 
 }(jQuery));

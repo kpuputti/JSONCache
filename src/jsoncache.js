@@ -159,6 +159,9 @@
 
         options.error = function (jqXHR, textStatus, errorThrown) {
             log('Ajax error with status:', textStatus);
+            if (typeof options.errorHook === 'function') {
+                options.errorHook(jqXHR, textStatus, errorThrown);
+            }
             window.setTimeout(function () {
                 JSONCache._tryGetJSON(url, options, tryNumber + 1, waitTime * 2);
             }, waitTime);
