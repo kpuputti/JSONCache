@@ -49,7 +49,7 @@
     var eq = strictEqual;
 
     test('Requirements.', function () {
-        expect(7);
+        expect(10);
 
         // Detect native JSON parser support.
         var jsonSupported = function () {
@@ -72,8 +72,13 @@
         eq(localStorageSupported(), true, 'localStorage is required');
         eq(typeof JSONCache, 'object', 'JSONCache is required');
         eq(typeof JSONCache.getCachedJSON, 'function', 'JSONCache is required');
+
         eq(JSONCache.settings.browserOk, true, 'JSONCache.browserOk');
         eq(JSONCache.settings.prefix, 'JSONCache', 'JSONCache prefix must match the one used in tests.');
+
+        eq(JSONCache.settings.numTries, 5, 'numTries should be the one expected.');
+        eq(JSONCache.settings.waitTime, 200, 'waitTime should be the one expected.');
+        eq(JSONCache.settings.itemLifetime, 5 * 60 * 1000, 'itemLifetime should be the one expected.');
     });
 
     test('Basic localStorage functionality', function () {
@@ -99,7 +104,7 @@
         // Mock the timestamp function for a static timestamp.
         JSONCache._getTime = function () {
             timeMockCallCount++;
-            return '1234567890123';
+            return 2345678901234;
         };
 
         // Initial conditions.
@@ -115,9 +120,10 @@
                     ],
                     'Weird väl': 666
                 }, 'Correct test data should be returned.');
+
                 deepEqual(data, JSON.parse(window.localStorage['JSONCache data data.json']),
                           'localStorage should be populated with the correct data.');
-                eq(window.localStorage['JSONCache time data.json'], '1234567890123',
+                eq(window.localStorage['JSONCache time data.json'], '2345678901234',
                    'Timestamp should be the one returned by the static mock function.');
                 eq(proxyMockCallCount, 1, 'Mocked json proxy should be called once.');
                 eq(timeMockCallCount, 1, 'Mocked timestamp function should be called once.');
@@ -342,5 +348,43 @@
         });
     });
 
+    asyncTest('Trying to get an expired item from the cache.', function () {
+        expect(3);
+
+        eq(window.localStorage.length, 0, 'localStorage should be empty initially.');
+
+        var proxyCallCount = 0;
+        JSONCache._getJSONProxy = function (url, options) {
+            proxyCallCount++;
+            if (url === 'data.json') {
+                options.success(testData);
+            }
+        };
+        JSONCache._getTime = function () {
+            return 2345678901234;
+        };
+
+        // Expired one millisecond.
+        var lifetime = 5 * 60 * 1000;
+        var time = 2345678901234 - lifetime - 1;
+
+        window.localStorage['JSONCache data data.json'] = '{"data":"öld invalid dätä"}';
+        window.localStorage['JSONCache time data.json'] = time;
+
+        JSONCache.getCachedJSON('data.json', {
+            success: function (data) {
+                deepEqual(data, {
+                    "success": true,
+                    "data": [
+                        "först item",
+                        "secönd itém"
+                    ],
+                    "Weird väl": 666
+                }, 'Returned data should be correct.');
+                eq(proxyCallCount, 1, 'Proxy function should be called once.');
+                start();
+            }
+        });
+    });
 
 }(jQuery));

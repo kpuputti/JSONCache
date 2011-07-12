@@ -40,7 +40,10 @@
         numTries: 5,
 
         // Time in milliseconds to wait after each timeout before a re-try.
-        waitTime: 200
+        waitTime: 200,
+
+        // Cache item validity lifetime in milliseconds.
+        itemLifetime: 5 * 60 * 1000
     };
 
     var log = function () {
@@ -144,7 +147,7 @@
 
     // Wrap the timestamp generation for easier mocking in the tests.
     JSONCache._getTime = function () {
-        return (new Date()).getTime().toString();
+        return (new Date()).getTime();
     };
 
     // Try to fetch the JSON multiple times.
@@ -174,6 +177,11 @@
         JSONCache._getJSONProxy(url, options);
     };
 
+    var cacheItemValid = function (timestr) {
+        var time = parseInt(timestr, 10);
+        return !isNaN(time) && (time + settings.itemLifetime >= JSONCache._getTime());
+    };
+
     JSONCache.getCachedJSON = function (url, options) {
         options = options || {};
         var now = (new Date()).getTime();
@@ -183,7 +191,7 @@
         var cachedData = window.localStorage[dataKey];
         var cachedTime = window.localStorage[timeKey];
 
-        if (cachedData) {
+        if (cachedData && cacheItemValid(cachedTime)) {
             log('Value found from cache for url:', url);
             success(JSON.parse(cachedData));
         } else {
