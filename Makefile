@@ -13,6 +13,7 @@ PHANTOMJS=phantomjs
 all: clean minify set_version
 
 minify: ${SOURCE_FILE}
+	@ echo "\nMinifying source file."
 	${JSMIN} --js ${SOURCE_FILE} --js_output_file ${OUTPUT_FILE}
 
 set_version: minify
@@ -21,11 +22,11 @@ set_version: minify
 
 test_dev:
 	@ echo "\n== Development tests =="
-	${PHANTOMJS} tests/run-qunit.js file://$(shell pwd)/tests/development.html
+	${PHANTOMJS} tests/run-jasmine.js file://$(shell pwd)/tests/development-jasmine.html
 
 test_prod: all
 	@ echo "\n== Production tests =="
-	${PHANTOMJS} tests/run-qunit.js file://$(shell pwd)/tests/production.html
+	${PHANTOMJS} tests/run-jasmine.js file://$(shell pwd)/tests/production-jasmine.html
 
 test: test_dev test_prod
 
