@@ -17,7 +17,7 @@ minify: ${SOURCE_FILE}
 	${JSMIN} --js ${SOURCE_FILE} --js_output_file ${OUTPUT_FILE}
 
 set_version: minify
-	@ echo "Setting build version to ${VERSION}"
+	@ echo "\nSetting build version to ${VERSION}"
 	@ sed -i "s/#VERSION#/${VERSION}/g" ${OUTPUT_FILE}
 
 test_dev:
@@ -31,4 +31,5 @@ test_prod: all
 test: test_dev test_prod
 
 clean:
+	@ echo "\nCleaning build directory."
 	rm -f ${BUILD_DIR}/*
