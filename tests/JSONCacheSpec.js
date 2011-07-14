@@ -99,6 +99,7 @@ describe('JSONCache Test Suite.', function () {
     });
 
     // JSONCache.clear
+
     it('should not fail trying to clear an item from an empty cache', function () {
         expect(window.localStorage.length).toBe(0);
         JSONCache.clear('http://example.org/key?param1=a%20b+c#hash-123');
@@ -143,6 +144,64 @@ describe('JSONCache Test Suite.', function () {
 
         expect(window.localStorage.length).toBe(1);
         expect(window.localStorage['öther kéy']).toBe('öther dätä');
+    });
+
+    // JSONCache.purgeOldest
+
+    it('should not fail trying to purge with an empty cache', function () {
+        expect(window.localStorage.length).toBe(0);
+        JSONCache.purgeOldest();
+        expect(window.localStorage.length).toBe(0);
+    });
+    it('should remove the only item in the cache', function () {
+        expect(window.localStorage.length).toBe(0);
+
+        window.localStorage['JSONCache data http://example.org/data'] = 'söme dätä';
+        window.localStorage['JSONCache time http://example.org/data'] = '123';
+
+        JSONCache.purgeOldest();
+        expect(window.localStorage.length).toBe(0);
+    });
+    it('should only remove the oldest item with several items in the cache', function () {
+        expect(window.localStorage.length).toBe(0);
+
+        window.localStorage['JSONCache data http://example.org/data1'] = 'söme dätä 1';
+        window.localStorage['JSONCache time http://example.org/data1'] = '1001';
+        window.localStorage['JSONCache data http://example.org/data2'] = 'söme dätä 2';
+        window.localStorage['JSONCache time http://example.org/data2'] = '1002';
+        window.localStorage['JSONCache data http://example.org/data3'] = 'söme dätä 3';
+        window.localStorage['JSONCache time http://example.org/data3'] = '1003';
+
+        JSONCache.purgeOldest();
+
+        expect(window.localStorage.length).toBe(4);
+        expect(window.localStorage['JSONCache data http://example.org/data2']).toBe('söme dätä 2');
+        expect(window.localStorage['JSONCache time http://example.org/data2']).toBe('1002');
+        expect(window.localStorage['JSONCache data http://example.org/data3']).toBe('söme dätä 3');
+        expect(window.localStorage['JSONCache time http://example.org/data3']).toBe('1003');
+    });
+    it('should remove oldest items with several calls and other items in the cache', function () {
+        expect(window.localStorage.length).toBe(0);
+
+        window.localStorage['JSONCache data http://example.org/data1'] = 'söme dätä 1';
+        window.localStorage['JSONCache time http://example.org/data1'] = '1001';
+        window.localStorage['JSONCache data http://example.org/data2'] = 'söme dätä 2';
+        window.localStorage['JSONCache time http://example.org/data2'] = '1002';
+        window.localStorage['JSONCache data http://example.org/data3'] = 'söme dätä 3';
+        window.localStorage['JSONCache time http://example.org/data3'] = '1003';
+
+        window.localStorage['öther key 1'] = 'öther dätä 1';
+        window.localStorage['öther key 2'] = 'öther dätä 2';
+
+        // Clear two oldest items.
+        JSONCache.purgeOldest();
+        JSONCache.purgeOldest();
+
+        expect(window.localStorage.length).toBe(4);
+        expect(window.localStorage['JSONCache data http://example.org/data3']).toBe('söme dätä 3');
+        expect(window.localStorage['JSONCache time http://example.org/data3']).toBe('1003');
+        expect(window.localStorage['öther key 1']).toBe('öther dätä 1');
+        expect(window.localStorage['öther key 2']).toBe('öther dätä 2');
     });
 
 });
