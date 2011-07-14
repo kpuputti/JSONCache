@@ -244,13 +244,13 @@ describe('JSONCache Test Suite.', function () {
     });
     it('should generate error if all requests time out with changed number of tries', function () {
 
-        JSONCache.settings.waitTime = 2;
+        JSONCache.settings.waitTime = 10;
         JSONCache.settings.numTries = 3;
 
         spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
             window.setTimeout(function () {
                 options.error(null, 'timeout', null);
-            }, 2);
+            }, 10);
         });
 
         var done = false;
@@ -273,10 +273,47 @@ describe('JSONCache Test Suite.', function () {
             expect(returnedStatus).toBe('timeout');
             expect(JSONCache._getJSONProxy.callCount).toBe(3);
             expect(retryHook.callCount).toBe(3);
-            console.log(retryHook.argsForCall.toString());
             expect(retryHook.argsForCall).toEqual([[1], [2], [3]]);
         });
+    });
+    it('should call the error hook properly', function () {
 
+        JSONCache.settings.waitTime = 10;
+
+        spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
+            window.setTimeout(function () {
+                options.error(null, 'timeout', null);
+            }, 10);
+        });
+
+
+        var errorHook = jasmine.createSpy();
+        var done = false;
+        var returnedStatus;
+
+        JSONCache.getCachedJSON('data.json', {
+            errorHook: errorHook,
+            JSONCacheError: function (status) {
+                done = true;
+                returnedStatus = status;
+            }
+        });
+
+        waitsFor(function () {
+            return done;
+        }, 'JSONCacheError function', 10000);
+        runs(function () {
+            expect(returnedStatus).toBe('timeout');
+            expect(JSONCache._getJSONProxy.callCount).toBe(5);
+            expect(errorHook.callCount).toBe(5);
+            expect(errorHook.argsForCall).toEqual([
+                [null, 'timeout', null, 1],
+                [null, 'timeout', null, 2],
+                [null, 'timeout', null, 3],
+                [null, 'timeout', null, 4],
+                [null, 'timeout', null, 5]
+            ]);
+        });
     });
 
 });
