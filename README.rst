@@ -70,11 +70,10 @@ JSONCache test suite uses Jasmine (
 https://github.com/pivotal/jasmine/wiki ) for its test framework. The
 tests can be run by typing:
 
-make test # for dev and production
-
-make test_dev # for dev
-
-make test_prop # for production
+::
+    make test # for dev and production
+    make test_dev # for dev
+    make test_prop # for production
 
 The command line test runner uses PhantomJS (
 http://www.phantomjs.org/ ). The tests can also be run by opening the
