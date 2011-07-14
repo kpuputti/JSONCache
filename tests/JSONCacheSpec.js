@@ -3,11 +3,14 @@
   indent: 4 */
 /*global beforeEach: false, describe: false, it: false, expect: false,
   spyOn: false, jQuery: false, JSONCache: false, window: false,
-  waitsFor: false, runs: false */
+  waitsFor: false, runs: false, jasmine: false */
 
 describe('JSONCache Test Suite.', function () {
 
     var testData;
+    var _numTries = JSONCache.settings.numTries;
+    var _waitTime = JSONCache.settings.waitTime;
+    var _itemLifetime = JSONCache.settings.itemLifetime;
 
     beforeEach(function () {
         try {
@@ -24,6 +27,9 @@ describe('JSONCache Test Suite.', function () {
             ],
             "Weird väl": 666
         };
+        JSONCache.settings.numTries = _numTries;
+        JSONCache.settings.waitTime = _waitTime;
+        JSONCache.settings.itemLifetime = _itemLifetime;
     });
 
     it('should satisfy the requirements', function () {
@@ -202,6 +208,75 @@ describe('JSONCache Test Suite.', function () {
         expect(window.localStorage['JSONCache time http://example.org/data3']).toBe('1003');
         expect(window.localStorage['öther key 1']).toBe('öther dätä 1');
         expect(window.localStorage['öther key 2']).toBe('öther dätä 2');
+    });
+
+    it('should generate error if all requests time out', function () {
+
+        // Make the waiting time shorter for faster tests.
+        JSONCache.settings.waitTime = 2;
+
+        expect(JSONCache.settings.numTries).toBe(5);
+
+        // Mock the proxy to always time out.
+        spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
+            window.setTimeout(function () {
+                options.error(null, 'timeout', null);
+            }, 2);
+        });
+
+        var done = false;
+        var returnedStatus;
+
+        JSONCache.getCachedJSON('data.json', {
+            JSONCacheError: function (status) {
+                done = true;
+                returnedStatus = status;
+            }
+        });
+
+        waitsFor(function () {
+            return done;
+        }, 'JSONCacheError function', 10000);
+        runs(function () {
+            expect(returnedStatus).toBe('timeout');
+            expect(JSONCache._getJSONProxy.callCount).toBe(5);
+        });
+    });
+    it('should generate error if all requests time out with changed number of tries', function () {
+
+        JSONCache.settings.waitTime = 2;
+        JSONCache.settings.numTries = 3;
+
+        spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
+            window.setTimeout(function () {
+                options.error(null, 'timeout', null);
+            }, 2);
+        });
+
+        var done = false;
+        var returnedStatus;
+
+        var retryHook = jasmine.createSpy();
+
+        JSONCache.getCachedJSON('data.json', {
+            retryHook: retryHook,
+            JSONCacheError: function (status) {
+                done = true;
+                returnedStatus = status;
+            }
+        });
+
+        waitsFor(function () {
+            return done;
+        }, 'JSONCacheError function', 10000);
+        runs(function () {
+            expect(returnedStatus).toBe('timeout');
+            expect(JSONCache._getJSONProxy.callCount).toBe(3);
+            expect(retryHook.callCount).toBe(3);
+            console.log(retryHook.argsForCall.toString());
+            expect(retryHook.argsForCall).toEqual([[1], [2], [3]]);
+        });
+
     });
 
 });
