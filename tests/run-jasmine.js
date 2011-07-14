@@ -43,7 +43,9 @@ var page = new WebPage();
 
 // Route "console.log()" calls from within the Page context to the main Phantom context (i.e. current "this")
 page.onConsoleMessage = function(msg) {
-    console.log(msg);
+    if (msg !== 'JSONCache:') {
+        console.log(msg);
+    }
 };
 
 page.open(phantom.args[0], function(status){
