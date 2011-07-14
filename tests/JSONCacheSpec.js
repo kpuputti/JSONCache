@@ -286,7 +286,6 @@ describe('JSONCache Test Suite.', function () {
             }, 10);
         });
 
-
         var errorHook = jasmine.createSpy();
         var done = false;
         var returnedStatus;
@@ -314,6 +313,99 @@ describe('JSONCache Test Suite.', function () {
                 [null, 'timeout', null, 5]
             ]);
         });
+    });
+
+    it('should not return an expired item from the cache', function () {
+        expect(window.localStorage.length).toBe(0);
+
+        spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
+            window.setTimeout(function () {
+                options.success(testData);
+            });
+        });
+        spyOn(JSONCache, '_getTime').andReturn(2345678901234);
+
+        var lifetime = 5 * 60 * 1000;
+        var time = 2345678901234 - lifetime - 1;
+
+        window.localStorage['JSONCache data data.json'] = '{"data":"öld invalid dätä"}';
+        window.localStorage['JSONCache time data.json'] = time;
+
+        var done = false;
+        var returnedData;
+
+        JSONCache.getCachedJSON('data.json', {
+            success: function (data) {
+                done = true;
+                returnedData = data;
+            }
+        });
+
+        waitsFor(function () {
+            return done;
+        });
+        runs(function () {
+            expect(returnedData).toEqual({
+                success: true,
+                data: [
+                    'först item',
+                    'secönd itém'
+                ],
+                'Weird väl': 666
+            });
+            expect(JSONCache._getJSONProxy.callCount).toBe(1);
+        });
+    });
+
+    it('should not fail cleaning an empty cache', function () {
+        expect(window.localStorage.length).toBe(0);
+        JSONCache.clean();
+        expect(window.localStorage.length).toBe(0);
+    });
+    it('should not clean valid items', function () {
+        expect(window.localStorage.length).toBe(0);
+
+        spyOn(JSONCache, '_getTime').andReturn(2345678901234);
+
+        window.localStorage['JSONCache data data1'] = '{"data":"dätä 1"}';
+        window.localStorage['JSONCache time data1'] = '2345678901234';
+        window.localStorage['JSONCache data data2'] = '{"data":"dätä 2"}';
+        window.localStorage['JSONCache time data2'] = (2345678901234 - 5 * 60 * 1000).toString();
+        window.localStorage['söme öther key'] = 'söme öther dätä';
+
+        JSONCache.clean();
+
+        expect(window.localStorage.length).toBe(5);
+        expect(window.localStorage['JSONCache data data1']).toBe('{"data":"dätä 1"}');
+        expect(window.localStorage['JSONCache time data1']).toBe('2345678901234');
+        expect(window.localStorage['JSONCache data data2']).toBe('{"data":"dätä 2"}');
+        expect(window.localStorage['JSONCache time data2']).toBe((2345678901234 - 5 * 60 * 1000).toString());
+        expect(window.localStorage['söme öther key']).toBe('söme öther dätä');
+    });
+    it('should clean expired items', function () {
+        expect(window.localStorage.length).toBe(0);
+
+        spyOn(JSONCache, '_getTime').andReturn(2345678901234);
+
+        window.localStorage['JSONCache data data1'] = '{"data":"dätä 1"}';
+        window.localStorage['JSONCache time data1'] = '1234567890123';
+        window.localStorage['JSONCache data data2'] = '{"data":"dätä 2"}';
+        // Expired 1 millisecond.
+        window.localStorage['JSONCache time data2'] = (2345678901234 - 5 * 60 * 1000 - 1).toString();
+        window.localStorage['JSONCache data data3'] = '{"data":"dätä 3"}';
+        window.localStorage['JSONCache time data3'] = '2345678901234';
+        window.localStorage['JSONCache data data4'] = '{"data":"dätä 4"}';
+        window.localStorage['JSONCache time data4'] = (2345678901234 - 5 * 60 * 1000).toString();
+        window.localStorage['söme öther key'] = 'söme öther dätä';
+
+        JSONCache.clean();
+
+        expect(window.localStorage.length).toBe(5);
+        expect(window.localStorage['JSONCache data data3']).toBe('{"data":"dätä 3"}');
+        expect(window.localStorage['JSONCache time data3']).toBe('2345678901234');
+        expect(window.localStorage['JSONCache data data4']).toBe('{"data":"dätä 4"}');
+        expect(window.localStorage['JSONCache time data4']).toBe((2345678901234 - 5 * 60 * 1000).toString());
+        expect(window.localStorage['söme öther key']).toBe('söme öther dätä');
     });
 
 });
