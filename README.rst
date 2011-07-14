@@ -71,6 +71,7 @@ https://github.com/pivotal/jasmine/wiki ) for its test framework. The
 tests can be run by typing:
 
 ::
+
     make test # for dev and production
     make test_dev # for dev
     make test_prop # for production
