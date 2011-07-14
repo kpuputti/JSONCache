@@ -66,12 +66,22 @@ Example with error hooks to display status info to user:
 Testing
 -------
 
-JSONCache uses QUnit as its test framework. The tests can be run by
-opening the `tests/index.html` in the browser that you want to test
-the library in, and selecting either the development version or the
-production (minified) version tests.
+JSONCache test suite uses Jasmine (
+https://github.com/pivotal/jasmine/wiki ) for its test framework. The
+tests can be run by typing:
 
-More about QUnit: http://docs.jquery.com/Qunit
+make test # for dev and production
+
+make test_dev # for dev
+
+make test_prop # for production
+
+The command line test runner uses PhantomJS (
+http://www.phantomjs.org/ ). The tests can also be run by opening the
+`tests/index.html` in a browser and clicking on the jasmine test
+links.
+
+Old QUnit tests are still available in the same index.html.
 
 TODO
 ----
