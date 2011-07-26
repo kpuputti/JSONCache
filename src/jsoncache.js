@@ -13,6 +13,7 @@
 
 (function ($) {
 
+	"use strict"; // trigger ECMAScript 5 Strict Mode
 
     // Configuration.
     var settings = {

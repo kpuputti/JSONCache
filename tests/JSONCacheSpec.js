@@ -7,6 +7,8 @@
 
 describe('JSONCache Test Suite.', function () {
 
+	"use strict"; // trigger ECMAScript 5 Strict Mode
+
     var testData;
     var _numTries = JSONCache.settings.numTries;
     var _waitTime = JSONCache.settings.waitTime;
