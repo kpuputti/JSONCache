@@ -1,0 +1,26 @@
+#jc-console {
+	border: 1px solid gray;
+	padding: 10px;
+	margin: 0;
+	height: 300px;
+	overflow: auto;
+}
+#jc-console li {
+	font-family: "Courier New", monospace;
+	font-size: 12px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+#jc-console li.jc-neutral {
+	color: black;
+}
+#jc-console li.jc-error {
+	color: rgb(150,0,0);
+}
+#jc-console li.jc-success {
+	color: rgb(0,100,0);
+}
+#jc-console li .jc-timestamp {
+	color: gray;
+}
