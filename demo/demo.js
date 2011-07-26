@@ -4,12 +4,9 @@ $(function() {
 
 	var $console = $('#jc-console');
 	var $fetch = $('#jc-fetch');
+	var $clear = $('#jc-clear');
+	var $resetConsole = $('#jc-resetConsole');
 	var consoleContentHeight = 0;
-
-	// Overrides the default $.ajax delegation to allow fiddling with the responses.
-	JSONCache._getJSONProxy = function (url, options) {
-        $.ajax(url, options);
-    };
 
 	// Left-pads the given string with zeroes to the given length.
 	var pad = function(str, length) {
@@ -41,21 +38,42 @@ $(function() {
 
 	};
 
+	// Overrides the default $.ajax delegation to allow fiddling with the responses.
+	JSONCache._getJSONProxy = function (url, options) {
+        $.ajax(url + '?' + new Date().getTime(), options);
+    };
+
 	// Fetches content from the server using JSONCache.getCachedJSON().
 	$fetch.click(function() {
 
-		log("Fetching 'data.json' from server...");
+		var url = 'data.json';
+		var date = new Date();
 
-		$.ajax({
-			url: 'data.json?' + new Date().getTime(),
-			dataType: 'json',
-			success: function(data, textStatus, jqXHR) {
-				log(JSON.stringify(data), 'success');
-			},
-			error: function(jqXHR, textStatus, errorThrown) {
-				log(textStatus, 'error');
+		log('Fetching: ' + url);
+
+		JSONCache.getCachedJSON(url, {
+			success: function(data) {
+				var timeDelta = pad(new Date().getTime() - date.getTime());
+				log(timeDelta + ' ms => ' + JSON.stringify(data), 'success');
 			}
 		});
+
+	});
+
+	// Clears the entire cache:
+	$clear.click(function() {
+
+		JSONCache.clear();
+
+		log('JSONCache cleared');
+
+	});
+
+	// Resets the "console" on the page:
+	$resetConsole.click(function() {
+
+		$console.html('');
+		consoleContentHeight = 0;
 
 	});
 
