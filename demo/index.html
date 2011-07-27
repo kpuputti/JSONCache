@@ -15,15 +15,11 @@
 
 		<h1>JSONCache Test Drive</h1>
 
-		<ol id="jc-console"></ol>
+		<fieldset id="jc-console">
 
-		<fieldset id="jc-actions">
+			<legend>Console</legend>
 
-			<legend>Actions</legend>
-
-			<button id="jc-fetch">Get Cached JSON</button>
-			<button id="jc-clear">Clear Cache</button>
-			<button id="jc-resetConsole">Reset Console</button>
+			<ol></ol>
 
 		</fieldset>
 
@@ -46,6 +42,16 @@
 			<label for="jc-successProb">Success probability:</label>
 			<input id="jc-successProb" name="successProb" type="range" min="0" max="1" step="0.1" value="1" />
 			<output for="jc-successProb"></output>
+
+		</fieldset>
+
+		<fieldset id="jc-actions">
+
+			<legend>Actions</legend>
+
+			<button id="jc-fetch">Get Cached JSON</button>
+			<button id="jc-clear">Clear Cache</button>
+			<button id="jc-resetConsole">Reset Console</button>
 
 		</fieldset>
 

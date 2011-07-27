@@ -1,8 +1,9 @@
 /* CONSOLE */
 
 #jc-console {
-	border: 1px solid gray;
-	padding: 10px;
+}
+#jc-console ol {
+	padding: 0;
 	margin: 0;
 	height: 300px;
 	overflow: auto;

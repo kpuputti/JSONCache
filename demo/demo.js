@@ -16,7 +16,7 @@ $(function() {
 
 	"use strict"; // trigger ECMAScript 5 Strict Mode
 
-	var $console = $('#jc-console');
+	var $console = $('#jc-console ol');
 	var $fetch = $('#jc-fetch');
 	var $clear = $('#jc-clear');
 	var $resetConsole = $('#jc-resetConsole');
