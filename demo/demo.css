@@ -1,3 +1,5 @@
+/* CONSOLE */
+
 #jc-console {
 	border: 1px solid gray;
 	padding: 10px;
@@ -23,4 +25,21 @@
 }
 #jc-console li .jc-timestamp {
 	color: gray;
+}
+
+/* SETTINGS */
+
+#jc-settings label {
+	float: left;
+	width: 150px;
+	clear: left;
+}
+#jc-settings input {
+	float: left;
+	width: 150px;
+}
+#jc-settings output {
+	float: left;
+	width: 75px;
+	text-align: right;
 }

@@ -12,10 +12,42 @@
 		<script type="text/javascript" src="demo.js"></script>
 	</head>
 	<body>
+
 		<h1>JSONCache Test Drive</h1>
+
 		<ol id="jc-console"></ol>
-		<button id="jc-fetch">getCachedJSON()</button>
-		<button id="jc-clear">clear()</button>
-		<button id="jc-resetConsole">Reset Console</button>
+
+		<fieldset id="jc-actions">
+
+			<legend>Actions</legend>
+
+			<button id="jc-fetch">Get Cached JSON</button>
+			<button id="jc-clear">Clear Cache</button>
+			<button id="jc-resetConsole">Reset Console</button>
+
+		</fieldset>
+
+		<fieldset id="jc-settings">
+
+			<legend>Settings</legend>
+
+			<label for="jc-numTries">Try count:</label>
+			<input id="jc-numTries" name="numTries" type="range" min="0" max="10" step="1" />
+			<output for="jc-numTries"></output>
+
+			<label for="jc-itemLifetime">Item lifetime (in ms):</label>
+			<input id="jc-itemLifetime" name="itemLifetime" type="range" min="0" max="100000" step="1000" />
+			<output for="jc-itemLifetime"></output>
+
+			<label for="jc-waitTime">Wait time (in ms):</label>
+			<input id="jc-waitTime" name="waitTime" type="range" min="0" max="60000" step="100" />
+			<output for="jc-waitTime"></output>
+
+			<label for="jc-successProb">Success probability:</label>
+			<input id="jc-successProb" name="successProb" type="range" min="0" max="1" step="0.1" value="1" />
+			<output for="jc-successProb"></output>
+
+		</fieldset>
+
 	</body>
 </html>
