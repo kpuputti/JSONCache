@@ -1,7 +1,5 @@
 /* CONSOLE */
 
-#jc-console {
-}
 #jc-console ol {
 	padding: 0;
 	margin: 0;
@@ -38,6 +36,7 @@
 #jc-settings input {
 	float: left;
 	width: 150px;
+	text-align: right;
 }
 #jc-settings output {
 	float: left;

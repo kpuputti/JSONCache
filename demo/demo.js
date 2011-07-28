@@ -20,6 +20,7 @@ $(function() {
 	var $fetch = $('#jc-fetch');
 	var $clear = $('#jc-clear');
 	var $resetConsole = $('#jc-resetConsole');
+	var $inputs = $('#jc-settings input[type=range]');
 	var consoleContentHeight = 0;
 
 	// Left-pads the given string with zeroes to the given length.
@@ -100,17 +101,24 @@ $(function() {
 
 	});
 
-	// Synchronize the range inputs with their related outputs etc.
-	$('#jc-settings input[type=range]').each(function() {
+	var outputs = {};
+
+	// Synchronize the inputs with their related outputs and the actual settings.
+	$inputs.each(function() {
 
 		if (this.name in JSONCache.settings)
 			this.value = JSONCache.settings[this.name];
 
+		outputs[this.id] = $('#jc-settings output[for=' + this.id + ']');
+
+		if (!Modernizr.inputtypes.range) { // range input not supported by UA
+			this.type = 'number';
+			outputs[this.id].hide();
+		}
+
 	}).change(function() {
 
-		var val = Math.round(this.value * 10) / 10;
-
-		$('#jc-settings output[for=' + this.id + ']').val(val);
+		outputs[this.id].val(Math.round(this.value * 10) / 10);
 
 		JSONCache.settings[this.name] = parseFloat(this.value, 10);
 
