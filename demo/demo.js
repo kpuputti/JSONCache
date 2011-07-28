@@ -23,6 +23,9 @@ $(function() {
 	var $inputs = $('#jc-settings input[type=range]');
 	var consoleContentHeight = 0;
 
+	if (!Modernizr.inputtypes.range) // range input not supported by UA
+		$(document.body).addClass('jc-noRangeInput');
+
 	// Left-pads the given string with zeroes to the given length.
 	var pad = function(str, length) {
 		str = '' + str;
@@ -111,10 +114,8 @@ $(function() {
 
 		outputs[this.id] = $('#jc-settings output[for=' + this.id + ']');
 
-		if (!Modernizr.inputtypes.range) { // range input not supported by UA
+		if (!Modernizr.inputtypes.range) // range input not supported by UA
 			this.type = 'number';
-			outputs[this.id].hide();
-		}
 
 	}).change(function() {
 

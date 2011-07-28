@@ -1,9 +1,32 @@
+/* COMMON STYLES */
+
+body {
+	font-family: "Lucida Grande", Tahoma, Verdana, Arial, Sans-Serif;
+	font-size: 12px;
+}
+fieldset {
+	padding: 10px;
+	margin: 0 10px 10px 0;
+	overflow: hidden;
+}
+fieldset legend {
+	font-weight: bold;
+}
+input {
+	padding: 0;
+	margin: 0;
+}
+
 /* CONSOLE */
 
+#jc-console {
+	height: 300px;
+	padding-right: 0;
+}
 #jc-console ol {
 	padding: 0;
 	margin: 0;
-	height: 300px;
+	height: 285px;
 	overflow: auto;
 }
 #jc-console li {
@@ -11,7 +34,7 @@
 	font-size: 12px;
 	list-style: none;
 	padding: 0;
-	margin: 0;
+	margin: 0 10px 0 0;
 }
 #jc-console li.jc-neutral {
 	color: black;
@@ -28,18 +51,43 @@
 
 /* SETTINGS */
 
+#jc-settings {
+	min-width: 200px;
+}
 #jc-settings label {
 	float: left;
-	width: 150px;
-	clear: left;
+	width: 65%;
+	clear: both;
+}
+#jc-settings output {
+	float: right;
+	width: 35%;
+	text-align: right;
+	font-weight: bold;
 }
 #jc-settings input {
 	float: left;
-	width: 150px;
-	text-align: right;
+	clear: both;
+	width: 100%;
+	margin-top: 5px;
+	margin-bottom: 10px;
 }
-#jc-settings output {
-	float: left;
-	width: 75px;
+
+
+/* FOR UA'S W/O RANGE-INPUT */
+
+body.jc-noRangeInput #jc-settings output {
+	display: none;
+}
+body.jc-noRangeInput #jc-settings input {
+	float: right;
+	width: 30%;
 	text-align: right;
+	font-weight: bold;
+	clear: right;
+	margin: 0 0 5px 0;
+	padding: 3px;
+}
+body.jc-noRangeInput #jc-settings label {
+	padding: 3px 0 0 0;
 }
