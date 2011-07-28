@@ -7,6 +7,10 @@ body {
 	border: 1px solid transparent; /* fixes margin-collapse on #jc-console */
 	min-width: 250px;
 }
+button {
+	font-family: "Lucida Grande", Tahoma, Verdana, Arial, Sans-Serif;
+	font-size: 12px;
+}
 fieldset {
 	padding: 10px;
 	margin: 0 0 10px 0;
@@ -38,7 +42,7 @@ h1 {
 #jc-console ol {
 	padding: 0;
 	margin: 0;
-	height: 285px;
+	height: 235px;
 	overflow: auto;
 }
 #jc-console li {
@@ -82,6 +86,22 @@ h1 {
 	margin-bottom: 10px;
 }
 
+/* ACTIONS */
+
+#jc-actions button {
+	display: block;
+	width: 100%;
+	height: 30px;
+	margin: 0 0 5px 0;
+	font-weight: bold;
+	text-align: left;
+}
+#jc-actions button span {
+	color: gray;
+	font-weight: normal;
+	margin-left: 5px;
+}
+
 /* FOR UA'S W/O RANGE-INPUT */
 
 body.jc-noRangeInput #jc-settings output {
@@ -117,6 +137,9 @@ body.jc-noRangeInput #jc-settings label {
 		right: 234px;
 		height: 400px;
 	}
+	#jc-console ol {
+		height: 385px;
+	}
 	#jc-settings {
 		position: absolute;
 		top: 50px;
@@ -131,5 +154,23 @@ body.jc-noRangeInput #jc-settings label {
 		height: 170px;
 		width: 200px;
 	}
+	#jc-actions button {
+		height: 45px;
+	}
+	#jc-actions button span {
+		display: block;
+		margin: 0;
+	}
 
+}
+
+/* FOR VERY NARROW VIEWPORTS */
+
+@media screen and (max-width: 350px) {
+	#jc-actions button {
+		text-align: center;
+	}
+	#jc-actions button span {
+		display: none;
+	}
 }
