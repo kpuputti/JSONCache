@@ -65,6 +65,22 @@ h1 {
 	color: gray;
 }
 
+/* ACTIONS */
+
+#jc-actions button {
+	display: block;
+	width: 100%;
+	height: 30px;
+	margin: 0 0 5px 0;
+	font-weight: bold;
+	text-align: left;
+}
+#jc-actions button span {
+	color: gray;
+	font-weight: normal;
+	margin-left: 5px;
+}
+
 /* SETTINGS */
 
 #jc-settings label {
@@ -84,22 +100,6 @@ h1 {
 	width: 100%;
 	margin-top: 5px;
 	margin-bottom: 10px;
-}
-
-/* ACTIONS */
-
-#jc-actions button {
-	display: block;
-	width: 100%;
-	height: 30px;
-	margin: 0 0 5px 0;
-	font-weight: bold;
-	text-align: left;
-}
-#jc-actions button span {
-	color: gray;
-	font-weight: normal;
-	margin-left: 5px;
 }
 
 /* FOR UA'S W/O RANGE-INPUT */
@@ -135,23 +135,23 @@ body.jc-noRangeInput #jc-settings label {
 		top: 50px;
 		left: 0;
 		right: 234px;
-		height: 400px;
+		height: 440px;
 	}
 	#jc-console ol {
-		height: 385px;
+		height: 425px;
 	}
-	#jc-settings {
+	#jc-actions {
 		position: absolute;
 		top: 50px;
 		right: 0;
 		width: 200px;
-		height: 200px;
+		height: 210px;
 	}
-	#jc-actions {
+	#jc-settings {
 		position: absolute;
-		top: 280px;
+		top: 290px;
 		right: 0;
-		height: 170px;
+		height: 200px;
 		width: 200px;
 	}
 	#jc-actions button {
@@ -166,7 +166,7 @@ body.jc-noRangeInput #jc-settings label {
 
 /* FOR VERY NARROW VIEWPORTS */
 
-@media screen and (max-width: 350px) {
+@media screen and (max-width: 375px) {
 	#jc-actions button {
 		text-align: center;
 	}
