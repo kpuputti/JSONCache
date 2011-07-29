@@ -212,7 +212,7 @@ describe('JSONCache Test Suite.', function () {
         expect(window.localStorage['öther key 2']).toBe('öther dätä 2');
     });
 
-    it('should generate error if all requests time out', function () {
+    it('should call ongiveup if all requests time out', function () {
 
         // Make the waiting time shorter for faster tests.
         JSONCache.settings.waitTime = 2;
@@ -230,7 +230,7 @@ describe('JSONCache Test Suite.', function () {
         var returnedStatus;
 
         JSONCache.getCachedJSON('data.json', {
-            JSONCacheError: function (status) {
+            ongiveup: function (status) {
                 done = true;
                 returnedStatus = status;
             }
@@ -238,13 +238,13 @@ describe('JSONCache Test Suite.', function () {
 
         waitsFor(function () {
             return done;
-        }, 'JSONCacheError function', 10000);
+        }, 'ongiveup function', 10000);
         runs(function () {
             expect(returnedStatus).toBe('timeout');
             expect(JSONCache._getJSONProxy.callCount).toBe(5);
         });
     });
-    it('should generate error if all requests time out with changed number of tries', function () {
+    it('should call ongiveup, and ontry with changed number of tries', function () {
 
         JSONCache.settings.waitTime = 10;
         JSONCache.settings.numTries = 3;
@@ -262,7 +262,7 @@ describe('JSONCache Test Suite.', function () {
 
         JSONCache.getCachedJSON('data.json', {
             ontry: ontry,
-            JSONCacheError: function (status) {
+            ongiveup: function (status) {
                 done = true;
                 returnedStatus = status;
             }
@@ -270,7 +270,7 @@ describe('JSONCache Test Suite.', function () {
 
         waitsFor(function () {
             return done;
-        }, 'JSONCacheError function', 10000);
+        }, 'ongiveup function', 10000);
         runs(function () {
             expect(returnedStatus).toBe('timeout');
             expect(JSONCache._getJSONProxy.callCount).toBe(3);
@@ -278,7 +278,7 @@ describe('JSONCache Test Suite.', function () {
             expect(ontry.argsForCall).toEqual([[1], [2], [3]]);
         });
     });
-    it('should call the error hook properly', function () {
+    it('should call the onerror callback properly', function () {
 
         JSONCache.settings.waitTime = 10;
 
@@ -294,7 +294,7 @@ describe('JSONCache Test Suite.', function () {
 
         JSONCache.getCachedJSON('data.json', {
             onerror: onerror,
-            JSONCacheError: function (status) {
+            ongiveup: function (status) {
                 done = true;
                 returnedStatus = status;
             }
@@ -302,7 +302,7 @@ describe('JSONCache Test Suite.', function () {
 
         waitsFor(function () {
             return done;
-        }, 'JSONCacheError function', 10000);
+        }, 'ongiveup function', 10000);
         runs(function () {
             expect(returnedStatus).toBe('timeout');
             expect(JSONCache._getJSONProxy.callCount).toBe(5);

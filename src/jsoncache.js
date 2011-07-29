@@ -167,8 +167,8 @@
     JSONCache._tryGetJSON = function (url, options, tryNumber, waitTime) {
         if (tryNumber > settings.numTries) {
             log('Tried fetching', tryNumber - 1, 'times already, returning.');
-            if (typeof options.JSONCacheError === 'function') {
-                options.JSONCacheError('timeout');
+            if (typeof options.ongiveup === 'function') {
+                options.ongiveup('timeout');
             }
             return;
         }
