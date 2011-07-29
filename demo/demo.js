@@ -79,7 +79,10 @@ $(function() {
 				log('Fetching, try #' + tryNumber + ' for "' + url + '"');
 			},
 			onerror: function(jqXHR, textStatus, errorThrown, tryNumber) {
-				log('Error on try #' + tryNumber, 'error');
+				log('Error, on try #' + tryNumber);
+			},
+			ongiveup: function(textStatus) {
+				log('Giving up: ' + textStatus, 'error');
 			}
 		});
 
