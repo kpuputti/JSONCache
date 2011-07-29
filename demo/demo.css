@@ -6,6 +6,8 @@ body {
 	position: relative;
 	border: 1px solid transparent; /* fixes margin-collapse on #jc-console */
 	min-width: 250px;
+	max-width: 1000px;
+	margin: 0 auto;
 }
 button {
 	font-family: "Lucida Grande", Tahoma, Verdana, Arial, Sans-Serif;
@@ -13,7 +15,7 @@ button {
 }
 fieldset {
 	padding: 10px;
-	margin: 0 0 10px 0;
+	margin: 10px;
 }
 fieldset legend {
 	font-weight: bold;
@@ -25,10 +27,10 @@ input {
 h1 {
 	position: absolute;
 	top: 0;
-	left: 0;
+	left: 10px;
 	right: 0;
 	font-size: 20px;
-	margin-top: 10px;
+	margin-top: 12px;
 	text-align: center;
 }
 h2 {
@@ -135,9 +137,9 @@ body.jc-noRangeInput #jc-settings label {
 		display: block;
 		position: absolute;
 		top: 0;
-		right: 0;
-		font-size: 16px;
-		margin-top: 12px;
+		right: 10px;
+		font-size: 15px;
+		margin-top: 16px;
 	}
 	h2 a {
 		color: gray;
@@ -146,8 +148,8 @@ body.jc-noRangeInput #jc-settings label {
 	#jc-console {
 		position: absolute;
 		top: 50px;
-		left: 0;
-		right: 234px;
+		left: 10px;
+		right: 244px;
 		height: 440px;
 	}
 	#jc-console ol {
@@ -156,14 +158,14 @@ body.jc-noRangeInput #jc-settings label {
 	#jc-actions {
 		position: absolute;
 		top: 50px;
-		right: 0;
+		right: 10px;
 		width: 200px;
 		height: 210px;
 	}
 	#jc-settings {
 		position: absolute;
 		top: 290px;
-		right: 0;
+		right: 10px;
 		height: 200px;
 		width: 200px;
 	}
