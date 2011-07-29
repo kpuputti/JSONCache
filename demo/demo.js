@@ -73,9 +73,7 @@ $(function() {
 		JSONCache.getCachedJSON(url, {
 			success: function(data) {
 				var timeDelta = new Date().getTime() - date.getTime();
-				var showData = JSON.stringify(data);
-				showData = showData.length > 50 ? showData.substring(0, 47) + '...' : showData;
-				log(timeDelta + ' ms => ' + showData, 'success');
+				log(timeDelta + ' ms => "' + url + '"', 'success');
 			},
 			retryHook: function(tryNumber) {
 				log('Fetching, try #' + tryNumber + ' for "' + url + '"');
@@ -111,6 +109,8 @@ $(function() {
 
 		$console.html('');
 		consoleContentHeight = 0;
+
+		log('Console reset');
 
 	});
 
