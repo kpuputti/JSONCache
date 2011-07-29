@@ -31,6 +31,9 @@ h1 {
 	margin-top: 10px;
 	text-align: center;
 }
+h2 {
+	display: none;
+}
 
 /* CONSOLE */
 
@@ -127,6 +130,18 @@ body.jc-noRangeInput #jc-settings label {
 	}
 	h1 {
 		text-align: left;
+	}
+	h2 {
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+		font-size: 16px;
+		margin-top: 12px;
+	}
+	h2 a {
+		color: gray;
+		text-decoration: none;
 	}
 	#jc-console {
 		position: absolute;
