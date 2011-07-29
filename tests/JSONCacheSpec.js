@@ -258,10 +258,10 @@ describe('JSONCache Test Suite.', function () {
         var done = false;
         var returnedStatus;
 
-        var retryHook = jasmine.createSpy();
+        var ontry = jasmine.createSpy();
 
         JSONCache.getCachedJSON('data.json', {
-            retryHook: retryHook,
+            ontry: ontry,
             JSONCacheError: function (status) {
                 done = true;
                 returnedStatus = status;
@@ -274,8 +274,8 @@ describe('JSONCache Test Suite.', function () {
         runs(function () {
             expect(returnedStatus).toBe('timeout');
             expect(JSONCache._getJSONProxy.callCount).toBe(3);
-            expect(retryHook.callCount).toBe(3);
-            expect(retryHook.argsForCall).toEqual([[1], [2], [3]]);
+            expect(ontry.callCount).toBe(3);
+            expect(ontry.argsForCall).toEqual([[1], [2], [3]]);
         });
     });
     it('should call the error hook properly', function () {
@@ -288,12 +288,12 @@ describe('JSONCache Test Suite.', function () {
             }, 10);
         });
 
-        var errorHook = jasmine.createSpy();
+        var onerror = jasmine.createSpy();
         var done = false;
         var returnedStatus;
 
         JSONCache.getCachedJSON('data.json', {
-            errorHook: errorHook,
+            onerror: onerror,
             JSONCacheError: function (status) {
                 done = true;
                 returnedStatus = status;
@@ -306,8 +306,8 @@ describe('JSONCache Test Suite.', function () {
         runs(function () {
             expect(returnedStatus).toBe('timeout');
             expect(JSONCache._getJSONProxy.callCount).toBe(5);
-            expect(errorHook.callCount).toBe(5);
-            expect(errorHook.argsForCall).toEqual([
+            expect(onerror.callCount).toBe(5);
+            expect(onerror.argsForCall).toEqual([
                 [null, 'timeout', null, 1],
                 [null, 'timeout', null, 2],
                 [null, 'timeout', null, 3],

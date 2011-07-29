@@ -18,7 +18,7 @@
     // Configuration.
     var settings = {
 
-        // This is expanded by the build process from the VERSION.txt file.
+        // This is expanded by the build process from the VERSION file.
         version: '#VERSION#',
 
         // Flag to see console.log calls.
@@ -175,16 +175,16 @@
 
         options.error = function (jqXHR, textStatus, errorThrown) {
             log('Ajax error with status:', textStatus);
-            if (typeof options.errorHook === 'function') {
-                options.errorHook(jqXHR, textStatus, errorThrown, tryNumber);
+            if (typeof options.onerror === 'function') {
+                options.onerror(jqXHR, textStatus, errorThrown, tryNumber);
             }
             window.setTimeout(function () {
                 JSONCache._tryGetJSON(url, options, tryNumber + 1, waitTime * 2);
             }, waitTime);
         };
 
-        if (typeof options.retryHook === 'function') {
-            options.retryHook(tryNumber);
+        if (typeof options.ontry === 'function') {
+            options.ontry(tryNumber);
         }
 
         JSONCache._getJSONProxy(url, options);

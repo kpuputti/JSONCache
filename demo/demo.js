@@ -75,11 +75,11 @@ $(function() {
 				var timeDelta = new Date().getTime() - date.getTime();
 				log(timeDelta + ' ms => "' + url + '"', 'success');
 			},
-			retryHook: function(tryNumber) {
+			ontry: function(tryNumber) {
 				log('Fetching, try #' + tryNumber + ' for "' + url + '"');
 			},
-			errorHook: function(jqXHR, textStatus, errorThrown, tryNumber) {
-				log('Failed on try #' + tryNumber, 'error');
+			onerror: function(jqXHR, textStatus, errorThrown, tryNumber) {
+				log('Error on try #' + tryNumber, 'error');
 			}
 		});
 
