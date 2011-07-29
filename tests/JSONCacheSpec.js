@@ -7,7 +7,7 @@
 
 describe('JSONCache Test Suite.', function () {
 
-	"use strict"; // trigger ECMAScript 5 Strict Mode
+    "use strict"; // trigger ECMAScript 5 Strict Mode
 
     var testData;
     var _numTries = JSONCache.settings.numTries;
@@ -34,7 +34,7 @@ describe('JSONCache Test Suite.', function () {
         JSONCache.settings.itemLifetime = _itemLifetime;
     });
 
-	// Environment requirements:
+    // Environment requirements:
 
     it('should satisfy the requirements', function () {
 
@@ -70,7 +70,7 @@ describe('JSONCache Test Suite.', function () {
         expect(window.localStorage['söme key']).toBe('söme dätä');
     });
 
-	// Basic functionality:
+    // Basic functionality:
 
     it('should return correct data and cache it', function () {
 
@@ -216,28 +216,28 @@ describe('JSONCache Test Suite.', function () {
         expect(window.localStorage['öther key 2']).toBe('öther dätä 2');
     });
 
-	// Error and hooks handling:
+    // Error and hooks handling:
 
-	it('should call ontry exactly once on a successful get', function () {
+    it('should call ontry exactly once on a successful get', function () {
 
-		// Mock the proxy.
+        // Mock the proxy.
         spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
-			window.setTimeout(function () {
-				options.success(testData);
-			}, 1);
+            window.setTimeout(function () {
+                options.success(testData);
+            }, 1);
 
         });
 
         var done = false;
-		var numTries = 0;
+        var numTries = 0;
 
         JSONCache.getCachedJSON('data.json', {
             success: function () {
                 done = true;
             },
-			ontry: function () {
-				numTries++;
-			}
+            ontry: function () {
+                numTries++;
+            }
         });
 
         waitsFor(function () {
@@ -313,29 +313,30 @@ describe('JSONCache Test Suite.', function () {
             expect(ontry.argsForCall).toEqual([[1], [2], [3]]);
         });
     });
-	it('should not call ongiveup when first requests fail but last one succeeds', function () {
+    it('should not call ongiveup when first requests fail but last one succeeds', function () {
 
         JSONCache.settings.waitTime = 10;
         JSONCache.settings.numTries = 3;
 
-		var tryNum = 1;
+        var tryNum = 1;
 
         spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
             window.setTimeout(function () {
-				if (tryNum++ < JSONCache.settings.numTries)
-                	options.error(null, 'timeout', null);
-				else
-					options.success(testData);
+                if (tryNum++ < JSONCache.settings.numTries) {
+                    options.error(null, 'timeout', null);
+                } else {
+                    options.success(testData);
+                }
             }, 1);
         });
 
         var done = false;
-		var gaveUp = false;
+        var gaveUp = false;
 
         JSONCache.getCachedJSON('data.json', {
-			success: function () {
-				done = true;
-			},
+            success: function () {
+                done = true;
+            },
             ongiveup: function () {
                 gaveUp = true;
             }
@@ -345,7 +346,7 @@ describe('JSONCache Test Suite.', function () {
             return done;
         }, 'success function', 1000);
         runs(function () {
-			expect(gaveUp).toBeFalsy();
+            expect(gaveUp).toBeFalsy();
         });
     });
     it('should call the onerror callback properly', function () {
@@ -387,7 +388,7 @@ describe('JSONCache Test Suite.', function () {
         });
     });
 
-	// Expiration handling:
+    // Expiration handling:
 
     it('should not return an expired item from the cache', function () {
         expect(window.localStorage.length).toBe(0);
@@ -431,7 +432,7 @@ describe('JSONCache Test Suite.', function () {
         });
     });
 
-	// JSONCache.clean:
+    // JSONCache.clean:
 
     it('should not fail cleaning an empty cache', function () {
         expect(window.localStorage.length).toBe(0);
