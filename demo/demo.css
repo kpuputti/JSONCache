@@ -49,20 +49,18 @@ h1 {
 	font-family: "Courier New", monospace;
 	font-size: 12px;
 	list-style: none;
+	color: gray;
 	padding: 0;
 	margin: 0 10px 0 0;
 }
-#jc-console li.jc-neutral {
+#jc-console li.jc-neutral .jc-message {
 	color: black;
 }
-#jc-console li.jc-error {
+#jc-console li.jc-error .jc-message {
 	color: rgb(150,0,0);
 }
-#jc-console li.jc-success {
+#jc-console li.jc-success .jc-message {
 	color: rgb(0,100,0);
-}
-#jc-console li .jc-timestamp {
-	color: gray;
 }
 
 /* ACTIONS */
@@ -167,10 +165,19 @@ body.jc-noRangeInput #jc-settings label {
 /* FOR VERY NARROW VIEWPORTS */
 
 @media screen and (max-width: 375px) {
+
 	#jc-actions button {
 		text-align: center;
 	}
 	#jc-actions button span {
 		display: none;
 	}
+	#jc-console li .jc-timestamp {
+		display: none;
+	}
+	#jc-console li {
+		list-style-type: disc;
+		margin-left: 18px;
+	}
+
 }
