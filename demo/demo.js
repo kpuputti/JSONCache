@@ -17,7 +17,6 @@ $(function() {
 	"use strict"; // trigger ECMAScript 5 Strict Mode
 
 	var $console = $('#jc-console ol');
-	var $fetch = $('#jc-fetch');
 	var $clear = $('#jc-clear');
 	var $resetConsole = $('#jc-resetConsole');
 	var $inputs = $('#jc-settings input[type=range]');
@@ -67,15 +66,16 @@ $(function() {
     };
 
 	// Fetches content from the server using JSONCache.getCachedJSON().
-	$fetch.click(function() {
+	var fetch = function(url) {
 
-		var url = 'data.json';
 		var date = new Date();
 
 		JSONCache.getCachedJSON(url, {
 			success: function(data) {
 				var timeDelta = new Date().getTime() - date.getTime();
-				log(timeDelta + ' ms => ' + JSON.stringify(data), 'success');
+				var showData = JSON.stringify(data);
+				showData = showData.length > 50 ? showData.substring(0, 47) + '...' : showData;
+				log(timeDelta + ' ms => ' + showData, 'success');
 			},
 			retryHook: function(tryNumber) {
 				log('Fetching, try #' + tryNumber + ' for "' + url + '"');
@@ -85,6 +85,16 @@ $(function() {
 			}
 		});
 
+	};
+
+	// Triggers the small fetch.
+	$('#jc-fetchSmall').click(function() {
+		fetch('small.json');
+	});
+
+	// Triggers the large fetch.
+	$('#jc-fetchBig').click(function() {
+		fetch('big.json');
 	});
 
 	// Clears the entire cache.
