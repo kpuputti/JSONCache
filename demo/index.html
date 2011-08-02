@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, height=device-height" />
+		<title>JSONCache Test Drive</title>
+		<link rel="stylesheet" type="text/css" href="demo.css" />
+		<script type="text/javascript" src="lib/modernizr-2.0.6.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js"></script>
+		<script type="text/javascript" src="../src/jsoncache.js"></script>
+		<script type="text/javascript" src="demo.js"></script>
+	</head>
+	<body>
+
+		<h1>JSONCache Test Drive</h1>
+		<h2><a href="https://github.com/kpuputti/JSONCache">github.com/kpuputti/JSONCache</a></h2>
+
+		<fieldset id="jc-console">
+
+			<legend>Console</legend>
+
+			<ol></ol>
+
+		</fieldset>
+
+		<fieldset id="jc-actions">
+
+			<legend>Actions</legend>
+
+			<button id="jc-fetchSmall">
+				Request Data
+				<span>Go through JSONCache (~30 B)</span>
+			</button>
+			<button id="jc-fetchBig">
+				Request Big Data
+				<span>Go through JSONCache (~1 MB)</span>
+			</button>
+			<button id="jc-clear">
+				Clear Cache
+				<span>Clear browser local storage</span>
+			</button>
+			<button id="jc-resetConsole">
+				Reset Console
+				<span>Remove all visible log entries</span>
+			</button>
+
+		</fieldset>
+
+		<fieldset id="jc-settings">
+
+			<legend>Settings</legend>
+
+			<label for="jc-numTries">Try count:</label>
+			<output for="jc-numTries"></output>
+			<input id="jc-numTries" name="numTries" type="range" min="0" max="10" step="1" />
+
+			<label for="jc-itemLifetime">Item lifetime (in ms):</label>
+			<output for="jc-itemLifetime"></output>
+			<input id="jc-itemLifetime" name="itemLifetime" type="range" min="0" max="60000" step="1000" />
+
+			<label for="jc-waitTime">Wait time (in ms):</label>
+			<output for="jc-waitTime"></output>
+			<input id="jc-waitTime" name="waitTime" type="range" min="0" max="5000" step="100" />
+
+			<label for="jc-successProb">Success probability:</label>
+			<output for="jc-successProb"></output>
+			<input id="jc-successProb" name="successProb" type="range" min="0" max="1" step="0.1" value="1" />
+
+		</fieldset>
+
+	</body>
+</html>
