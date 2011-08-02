@@ -190,8 +190,7 @@
         }
         // Remove the oldest item data and time records.
         if (timeOldest !== null) {
-            window.localStorage.removeItem(timeKeyOldest.replace(' time ', ' data '));
-            window.localStorage.removeItem(timeKeyOldest);
+            JSONCache.clear(timeKeyOldest.replace('JSONCache time ', ''));
         }
     };
 

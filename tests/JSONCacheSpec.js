@@ -624,9 +624,7 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(10);
 
         });
-        xit('should update cache size on purgeOldest()', function() {
-
-            // TODO
+        it('should update cache size on purgeOldest()', function() {
 
             responses = [ 'a', 'ab', 'abc' ];
 
@@ -635,7 +633,7 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data3.json');
             JSONCache.purgeOldest();
 
-            expect(JSONCache.getCacheSize()).toBe(14); // == ( len('"a"') + len('"ab"') ) * 2
+            expect(JSONCache.getCacheSize()).toBe(18); // == ( len('"ab"') + len('"abc"') ) * 2
 
         });
         xit('should evict older entries when cache size grows beyond its limits', function() {
