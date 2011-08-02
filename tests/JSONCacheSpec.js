@@ -580,6 +580,32 @@ describe('JSONCache Test Suite', function () {
             expect(window.localStorage['JSONCache size']).toBeUndefined();
 
         });
+        it('should update cache size on clear() for specific items', function() {
+
+            responses = [ 'a', 'ab', 'abc' ];
+
+            JSONCache.getCachedJSON('data1.json');
+            JSONCache.getCachedJSON('data2.json');
+            JSONCache.getCachedJSON('data3.json');
+
+            JSONCache.clear('data2.json');
+            expect(window.localStorage['JSONCache size']).toBe('16');
+            JSONCache.clear('data3.json');
+            expect(window.localStorage['JSONCache size']).toBe('6');
+            JSONCache.clear('data1.json');
+            expect(window.localStorage['JSONCache size']).toBeUndefined();
+
+        });
+        it('should not get confused when removing a non-existant entry', function() {
+
+            responses = [ 'abc' ];
+
+            JSONCache.getCachedJSON('data.json');
+            JSONCache.clear('something-else.json');
+
+            expect(window.localStorage['JSONCache size']).toBe('10');
+
+        });
         xit('should update cache size on purgeOldest()', function() {
 
             // TODO

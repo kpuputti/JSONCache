@@ -62,15 +62,27 @@
         return jsonOk && localStorageOk;
     }());
 
-    var addToCacheSize = function (byCharCount) {
-        if (typeof byCharCount !== 'number') {
+    // Adds the given number of characters to the current size of the cache.
+    // Use negative char counts to subtract.  Removes the size-tracking key
+    // whenever cache size is zero.
+    var addToCacheSize = function (charCount) {
+        if (typeof charCount !== 'number') {
             throw new Error('Cannot update cache total size without a char count');
         }
         var current = parseInt(window.localStorage[KEY_SIZE_TOTAL], 10);
         if (isNaN(current)) {
-            window.localStorage[KEY_SIZE_TOTAL] = current = 0;
+            current = 0;
         }
-        window.localStorage[KEY_SIZE_TOTAL] = current + byCharCount * 2; // assume 2-byte-wide characters
+        var updated = current + charCount * 2; // assume 2-byte-wide characters
+        if (updated <= 0) {
+            // updated < 0 means there's an inconsitency between what JSONCache thinks is in localStorage
+            // and what actually is.  If this happens, it's either due to a bug in JSONCache or the user
+            // manipulating the cache by bypassing JSONCache.  updated === 0 is OK though.
+            // TODO: Should we rather throw an Error here..?
+            delete window.localStorage[KEY_SIZE_TOTAL];
+        } else {
+            window.localStorage[KEY_SIZE_TOTAL] = updated;
+        }
     };
 
     var addToCache = function (key, data) {
@@ -97,6 +109,10 @@
     JSONCache.clear = function (url) {
         if (url) {
             // Remove a particular item.
+            if (window.localStorage['JSONCache data ' + url]) {
+                var charsToRemove = window.localStorage['JSONCache data ' + url].length;
+                addToCacheSize(-1 * charsToRemove);
+            }
             window.localStorage.removeItem('JSONCache data ' + url);
             window.localStorage.removeItem('JSONCache time ' + url);
         } else {
