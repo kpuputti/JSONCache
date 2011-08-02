@@ -106,7 +106,7 @@ describe('JSONCache Test Suite.', function () {
             expect(JSONCache._getJSONProxy.callCount).toBe(1);
             expect(JSONCache._getJSONProxy.mostRecentCall.args[0]).toBe('data.json');
             expect(JSONCache._getTime.callCount).toBe(1);
-            expect(window.localStorage.length).toBe(2);
+            expect(window.localStorage.length).toBe(3);
         });
     });
     it('should allow calls without a success handler', function () { // usage example: for warming up the cache without acting on the responses (yet)
@@ -500,6 +500,48 @@ describe('JSONCache Test Suite.', function () {
         expect(window.localStorage['JSONCache data data4']).toBe('{"data":"dätä 4"}');
         expect(window.localStorage['JSONCache time data4']).toBe((2345678901234 - 5 * 60 * 1000).toString());
         expect(window.localStorage['söme öther key']).toBe('söme öther dätä');
+    });
+
+    // Cache size tracking:
+
+    describe('Cache size tracking', function() {
+
+        var timestamp = 2345678900000;
+        var responses = [];
+
+        beforeEach(function() {
+
+            expect(window.localStorage.length).toBe(0);
+            expect(window.localStorage['JSONCache size']).toBeUndefined();
+
+            spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
+                if (responses.length > 0) {
+                    options.success(responses.shift());
+                } else {
+                    throw new Error('Array of fake responses exhausted unexpectedly');
+                }
+            });
+
+            spyOn(JSONCache, '_getTime').andCallFake(function() {
+                return timestamp += 100;
+            });
+
+        });
+
+        it('should update cache size automatically on single add', function() {
+
+            responses = [ 'abc' ];
+
+            JSONCache.getCachedJSON('data.json');
+
+            expect(window.localStorage['JSONCache size']).toBe('10'); // == len('"abc"') * 2
+
+        });
+
+        xit('should evict older entries when cache size grows beyond its limits', function() {
+            // TODO
+        });
+
     });
 
 });

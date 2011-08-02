@@ -31,7 +31,10 @@
         waitTime: 200,
 
         // Cache item validity lifetime in milliseconds.
-        itemLifetime: 5 * 60 * 1000
+        itemLifetime: 5 * 60 * 1000,
+
+        // Maximum size allowed for the cache, in bytes; null for unlimited (by JSONCache that is).
+        maxCacheSize: 2621440
     };
 
     var log = function () {
@@ -55,6 +58,18 @@
         }
         return jsonOk && localStorageOk;
     }());
+
+    var addToCacheSize = function (byCharCount) {
+        if (typeof byCharCount !== 'number') {
+            throw new Error('Cannot update cache total size without a char count');
+        }
+        var key = 'JSONCache size';
+        var current = parseInt(window.localStorage[key], 10);
+        if (isNaN(current)) {
+            window.localStorage[key] = current = 0;
+        }
+        window.localStorage[key] = current + byCharCount * 2; // assume 2-byte-wide characters
+    };
 
     var addToCache = function (key, data) {
         try {
@@ -209,9 +224,11 @@
 
             // Wrap the success function to cache the data.
             options.success = function (data) {
+                var stringified = JSON.stringify(data);
                 log('Fetched data, adding to cache for url:', url);
-                addToCache(dataKey, JSON.stringify(data));
+                addToCache(dataKey, stringified);
                 addToCache(timeKey, JSONCache._getTime());
+                addToCacheSize(stringified.length);
                 if (typeof success === 'function') {
                     success(data);
                 }
