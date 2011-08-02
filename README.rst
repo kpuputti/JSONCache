@@ -52,10 +52,10 @@ Example with error hooks to display status info to user:
     var message = $('#message');
 
     JSONCache.getCachedJSON(
-        errorHook: function (jqXHR, textStatus, errorThrown, tryNumber) {
+        onerror: function (jqXHR, textStatus, errorThrown, tryNumber) {
             message.text('Failed fetch number ' + tryNumber + '. Trying again...');
         },
-        JSONCacheError: function (status) {
+        ongiveup: function (status) {
             message.text('Network failure, cannot fetch data.');
         },
         success: function (data) {
