@@ -210,7 +210,9 @@
                 log('Fetched data, adding to cache for url:', url);
                 addToCache(dataKey, JSON.stringify(data));
                 addToCache(timeKey, JSONCache._getTime());
-                success(data);
+                if (typeof success === 'function') {
+                    success(data);
+                }
             };
             // TODO: add support for user defined error function handling.
 
