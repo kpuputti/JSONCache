@@ -540,7 +540,7 @@ describe('JSONCache Test Suite', function () {
 
         });
 
-        it('should update cache size automatically on single add', function() {
+        it('should update cache size on single add', function() {
 
             responses = [ 'abc' ];
 
@@ -549,7 +549,7 @@ describe('JSONCache Test Suite', function () {
             expect(window.localStorage['JSONCache size']).toBe('10'); // == len('"abc"') * 2
 
         });
-        it('should update cache size automatically on multiple adds', function() {
+        it('should update cache size on multiple adds', function() {
 
             responses = [ 'a', 'ab', 'abc' ];
 
@@ -570,9 +570,38 @@ describe('JSONCache Test Suite', function () {
             expect(window.localStorage['JSONCache size']).toBe('10'); // == len('"abc"') * 2
 
         });
-        xit('should evict older entries when cache size grows beyond its limits', function() {
-            // TODO
+        it('should update cache size on clear() all', function() {
+
+            responses = [ 'abc' ];
+
+            JSONCache.getCachedJSON('data.json');
+            JSONCache.clear();
+
+            expect(window.localStorage['JSONCache size']).toBeUndefined();
+
         });
+        xit('should update cache size on purgeOldest()', function() {
+
+            // TODO
+
+            responses = [ 'a', 'ab', 'abc' ];
+
+            JSONCache.getCachedJSON('data1.json');
+            JSONCache.getCachedJSON('data2.json');
+            JSONCache.getCachedJSON('data3.json');
+            JSONCache.purgeOldest();
+
+            expect(window.localStorage['JSONCache size']).toBe('14'); // == ( len('"a"') + len('"ab"') ) * 2
+
+        });
+        xit('should evict older entries when cache size grows beyond its limits', function() {
+
+            // TODO
+
+        });
+
+        // TODO: Take keys into account..?
+        // TODO: Implement JSONCache.getCacheSize()..?
 
     });
 

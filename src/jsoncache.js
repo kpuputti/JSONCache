@@ -15,6 +15,9 @@
 
 	"use strict"; // trigger ECMAScript 5 Strict Mode
 
+    // Constants.
+    var KEY_SIZE_TOTAL = 'JSONCache size';
+
     // Configuration.
     var settings = {
 
@@ -63,12 +66,11 @@
         if (typeof byCharCount !== 'number') {
             throw new Error('Cannot update cache total size without a char count');
         }
-        var key = 'JSONCache size';
-        var current = parseInt(window.localStorage[key], 10);
+        var current = parseInt(window.localStorage[KEY_SIZE_TOTAL], 10);
         if (isNaN(current)) {
-            window.localStorage[key] = current = 0;
+            window.localStorage[KEY_SIZE_TOTAL] = current = 0;
         }
-        window.localStorage[key] = current + byCharCount * 2; // assume 2-byte-wide characters
+        window.localStorage[KEY_SIZE_TOTAL] = current + byCharCount * 2; // assume 2-byte-wide characters
     };
 
     var addToCache = function (key, data) {
@@ -118,6 +120,9 @@
             for (i = 0; i < len; ++i) {
                 window.localStorage.removeItem(keysToBeRemoved[i]);
             }
+
+            // Update cache total size.
+            delete window.localStorage[KEY_SIZE_TOTAL];
         }
     };
 
