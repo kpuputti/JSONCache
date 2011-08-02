@@ -117,6 +117,15 @@ describe('JSONCache Test Suite.', function () {
 
         JSONCache.getCachedJSON('data.json');
     });
+    it('should allow calls without a success handler that return from the cache', function () {
+        // Mock the proxy function.
+        spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
+            options.success(testData);
+        });
+
+        JSONCache.getCachedJSON('data.json');
+        JSONCache.getCachedJSON('data.json');
+    });
 
     // JSONCache.clear:
 

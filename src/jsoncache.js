@@ -201,7 +201,9 @@
 
         if (cachedData && cacheItemValid(cachedTime)) {
             log('Value found from cache for url:', url);
-            success(JSON.parse(cachedData));
+            if (typeof success === 'function') {
+                success(JSON.parse(cachedData));
+            }
         } else {
             log('Value not found in cache fetching data from url:', url);
 
