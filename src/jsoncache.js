@@ -97,6 +97,12 @@
     var JSONCache = {};
     JSONCache.settings = settings;
 
+    // Returns the size of the current cache (as thought to be by JSONCache), in bytes.
+    JSONCache.getCacheSize = function () {
+        var size = parseInt(window.localStorage[KEY_SIZE_TOTAL], 10);
+        return isNaN(size) ? 0 : size;
+    };
+
     var cacheItemValid = function (timestr) {
         var time = parseInt(timestr, 10);
         return !isNaN(time) && (time + settings.itemLifetime >= JSONCache._getTime());

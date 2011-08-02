@@ -546,7 +546,7 @@ describe('JSONCache Test Suite', function () {
 
             JSONCache.getCachedJSON('data.json');
 
-            expect(window.localStorage['JSONCache size']).toBe('10'); // == len('"abc"') * 2
+            expect(JSONCache.getCacheSize()).toBe(10); // == len('"abc"') * 2
 
         });
         it('should update cache size on multiple adds', function() {
@@ -557,7 +557,7 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data2.json');
             JSONCache.getCachedJSON('data3.json');
 
-            expect(window.localStorage['JSONCache size']).toBe('24'); // == ( len('"a"') + len('"ab"') + len('"abc"') ) * 2
+            expect(JSONCache.getCacheSize()).toBe(24); // == ( len('"a"') + len('"ab"') + len('"abc"') ) * 2
 
         });
         it('should not increase cache size counter when not actually adding anything', function() {
@@ -567,7 +567,7 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data.json');
             JSONCache.getCachedJSON('data.json'); // this should not add cache size as it produces a cache hit
 
-            expect(window.localStorage['JSONCache size']).toBe('10'); // == len('"abc"') * 2
+            expect(JSONCache.getCacheSize()).toBe(10); // == len('"abc"') * 2
 
         });
         it('should update cache size on clear() all', function() {
@@ -577,7 +577,7 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data.json');
             JSONCache.clear();
 
-            expect(window.localStorage['JSONCache size']).toBeUndefined();
+            expect(JSONCache.getCacheSize()).toBe(0);
 
         });
         it('should update cache size on clear() for specific items', function() {
@@ -589,11 +589,11 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data3.json');
 
             JSONCache.clear('data2.json');
-            expect(window.localStorage['JSONCache size']).toBe('16');
+            expect(JSONCache.getCacheSize()).toBe(16);
             JSONCache.clear('data3.json');
-            expect(window.localStorage['JSONCache size']).toBe('6');
+            expect(JSONCache.getCacheSize()).toBe(6);
             JSONCache.clear('data1.json');
-            expect(window.localStorage['JSONCache size']).toBeUndefined();
+            expect(JSONCache.getCacheSize()).toBe(0);
 
         });
         it('should not get confused when removing a non-existant entry', function() {
@@ -603,7 +603,7 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data.json');
             JSONCache.clear('something-else.json');
 
-            expect(window.localStorage['JSONCache size']).toBe('10');
+            expect(JSONCache.getCacheSize()).toBe(10);
 
         });
         xit('should update cache size on purgeOldest()', function() {
@@ -617,7 +617,7 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data3.json');
             JSONCache.purgeOldest();
 
-            expect(window.localStorage['JSONCache size']).toBe('14'); // == ( len('"a"') + len('"ab"') ) * 2
+            expect(JSONCache.getCacheSize()).toBe(14); // == ( len('"a"') + len('"ab"') ) * 2
 
         });
         xit('should evict older entries when cache size grows beyond its limits', function() {
@@ -627,7 +627,6 @@ describe('JSONCache Test Suite', function () {
         });
 
         // TODO: Take keys into account..?
-        // TODO: Implement JSONCache.getCacheSize()..?
 
     });
 
