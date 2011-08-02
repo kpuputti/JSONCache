@@ -518,10 +518,13 @@ describe('JSONCache Test Suite', function () {
 
     describe('Cache size tracking', function() {
 
-        var timestamp = 2345678900000;
-        var responses = [];
+        var timestamp;
+        var responses;
 
         beforeEach(function() {
+
+            timestamp = 1000;
+            responses = [];
 
             expect(window.localStorage.length).toBe(0);
             expect(window.localStorage['JSONCache size']).toBeUndefined();
@@ -606,6 +609,21 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(10);
 
         });
+        it('should update cache size on clean()', function() {
+
+            JSONCache.settings.itemLifetime = 150;
+
+            responses = [ 'a', 'ab', 'abc' ];
+
+            JSONCache.getCachedJSON('data1.json'); // timestamp === 1100
+            JSONCache.getCachedJSON('data2.json'); // timestamp === 1200
+            JSONCache.getCachedJSON('data3.json'); // timestamp === 1300
+
+            JSONCache.clean(); // timestamp === 1400; removes data{1,2}.json
+
+            expect(JSONCache.getCacheSize()).toBe(10);
+
+        });
         xit('should update cache size on purgeOldest()', function() {
 
             // TODO
@@ -626,7 +644,7 @@ describe('JSONCache Test Suite', function () {
 
         });
 
-        // TODO: Take keys into account..?
+        // TODO: Take keys into account in the cache size..?
 
     });
 
