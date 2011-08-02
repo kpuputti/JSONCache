@@ -537,7 +537,27 @@ describe('JSONCache Test Suite.', function () {
             expect(window.localStorage['JSONCache size']).toBe('10'); // == len('"abc"') * 2
 
         });
+        it('should update cache size automatically on multiple adds', function() {
 
+            responses = [ 'a', 'ab', 'abc' ];
+
+            JSONCache.getCachedJSON('data1.json');
+            JSONCache.getCachedJSON('data2.json');
+            JSONCache.getCachedJSON('data3.json');
+
+            expect(window.localStorage['JSONCache size']).toBe('24'); // == ( len('"a"') + len('"ab"') + len('"abc"') ) * 2
+
+        });
+        it('should NOT increase cache size counter when not actually adding anything', function() {
+
+            responses = [ 'abc', 'xyz' ];
+
+            JSONCache.getCachedJSON('data.json');
+            JSONCache.getCachedJSON('data.json'); // this should not add cache size as it produces a cache hit
+
+            expect(window.localStorage['JSONCache size']).toBe('10'); // == len('"abc"') * 2
+
+        });
         xit('should evict older entries when cache size grows beyond its limits', function() {
             // TODO
         });
