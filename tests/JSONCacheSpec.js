@@ -13,6 +13,7 @@ describe('JSONCache Test Suite', function () {
     var _numTries = JSONCache.settings.numTries;
     var _waitTime = JSONCache.settings.waitTime;
     var _itemLifetime = JSONCache.settings.itemLifetime;
+    var _maxCacheSize = JSONCache.settings.maxCacheSize;
 
     beforeEach(function () {
         try {
@@ -32,6 +33,7 @@ describe('JSONCache Test Suite', function () {
         JSONCache.settings.numTries = _numTries;
         JSONCache.settings.waitTime = _waitTime;
         JSONCache.settings.itemLifetime = _itemLifetime;
+        JSONCache.settings.maxCacheSize = _maxCacheSize;
     });
 
     describe('Environment requirements', function() {
@@ -636,13 +638,18 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(18); // == ( len('"ab"') + len('"abc"') ) * 2
 
         });
+
+        // TODO: Take keys into account in the cache size..?
+
+    });
+
+    describe('Cache eviction policy', function() {
+
         xit('should evict older entries when cache size grows beyond its limits', function() {
 
             // TODO
 
         });
-
-        // TODO: Take keys into account in the cache size..?
 
     });
 

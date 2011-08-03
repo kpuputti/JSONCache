@@ -17,6 +17,8 @@
 
     // Constants.
     var KEY_SIZE_TOTAL = 'JSONCache size';
+    var KEY_PREF_DATA = 'JSONCache data ';
+    var KEY_PREF_TIME = 'JSONCache time ';
 
     // Configuration.
     var settings = {
@@ -39,6 +41,10 @@
         // Maximum size allowed for the cache, in bytes; null for unlimited (by JSONCache that is).
         maxCacheSize: 2621440
     };
+
+    // Namespace for all the code.
+    var JSONCache = {};
+    JSONCache.settings = settings;
 
     var log = function () {
         if (settings.debug && window.console) {
@@ -85,17 +91,20 @@
         }
     };
 
-    var addToCache = function (key, data) {
+    // Adds the given data object to the cache, keyed under the given url.
+    // Note that the data is assumed to be in its original object state,
+    // and will only get serialized/stringified here.
+    var addToCache = function (url, data) {
+        var stringified = JSON.stringify(data);
+        var timestamp = JSONCache._getTime();
         try {
-            window.localStorage[key] = data;
+            window.localStorage[KEY_PREF_DATA + url] = stringified;
+            window.localStorage[KEY_PREF_TIME + url] = timestamp;
+            addToCacheSize(stringified.length);
         } catch (e) {
             log('Error adding data to localStorage, quota might be full.');
         }
     };
-
-    // Namespace for all the code.
-    var JSONCache = {};
-    JSONCache.settings = settings;
 
     // Returns the size of the current cache (as thought to be by JSONCache), in bytes.
     JSONCache.getCacheSize = function () {
@@ -115,12 +124,12 @@
     JSONCache.clear = function (url) {
         if (url) {
             // Remove a particular item.
-            if (window.localStorage['JSONCache data ' + url]) {
-                var charsToRemove = window.localStorage['JSONCache data ' + url].length;
+            if (window.localStorage[KEY_PREF_DATA + url]) {
+                var charsToRemove = window.localStorage[KEY_PREF_DATA + url].length;
                 addToCacheSize(-1 * charsToRemove);
             }
-            window.localStorage.removeItem('JSONCache data ' + url);
-            window.localStorage.removeItem('JSONCache time ' + url);
+            window.localStorage.removeItem(KEY_PREF_DATA + url);
+            window.localStorage.removeItem(KEY_PREF_TIME + url);
         } else {
             // Remove all items (stored by JSONCache) if no url was specified.
 
@@ -190,7 +199,7 @@
         }
         // Remove the oldest item data and time records.
         if (timeOldest !== null) {
-            JSONCache.clear(timeKeyOldest.replace('JSONCache time ', ''));
+            JSONCache.clear(timeKeyOldest.replace(KEY_PREF_TIME, ''));
         }
     };
 
@@ -233,12 +242,9 @@
 
     JSONCache.getCachedJSON = function (url, options) {
         options = options || {};
-        var now = (new Date()).getTime();
         var success = options.success;
-        var dataKey = 'JSONCache data ' + url;
-        var timeKey = 'JSONCache time ' + url;
-        var cachedData = window.localStorage[dataKey];
-        var cachedTime = window.localStorage[timeKey];
+        var cachedData = window.localStorage[KEY_PREF_DATA + url];
+        var cachedTime = window.localStorage[KEY_PREF_TIME + url];
 
         if (cachedData && cacheItemValid(cachedTime)) {
             log('Value found from cache for url:', url);
@@ -250,11 +256,8 @@
 
             // Wrap the success function to cache the data.
             options.success = function (data) {
-                var stringified = JSON.stringify(data);
                 log('Fetched data, adding to cache for url:', url);
-                addToCache(dataKey, stringified);
-                addToCache(timeKey, JSONCache._getTime());
-                addToCacheSize(stringified.length);
+                addToCache(url, data);
                 if (typeof success === 'function') {
                     success(data);
                 }
