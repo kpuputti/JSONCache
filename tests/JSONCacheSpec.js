@@ -36,7 +36,7 @@ describe('JSONCache Test Suite', function () {
         JSONCache.settings.maxCacheSize = _maxCacheSize;
     });
 
-    describe('Environment requirements', function() {
+    describe('Environment requirements', function () {
 
         it('should satisfy the requirements', function () {
 
@@ -74,7 +74,7 @@ describe('JSONCache Test Suite', function () {
 
     });
 
-    describe('Basic functionality', function() {
+    describe('Basic functionality', function () {
 
         it('should return correct data and cache it', function () {
 
@@ -133,7 +133,7 @@ describe('JSONCache Test Suite', function () {
 
     });
 
-    describe('JSONCache.clear', function() {
+    describe('JSONCache.clear', function () {
 
         it('should not fail trying to clear an item from an empty cache', function () {
             expect(window.localStorage.length).toBe(0);
@@ -183,7 +183,7 @@ describe('JSONCache Test Suite', function () {
 
     });
 
-    describe('JSONCache.purgeOldest', function() {
+    describe('JSONCache.purgeOldest', function () {
 
         it('should not fail trying to purge with an empty cache', function () {
             expect(window.localStorage.length).toBe(0);
@@ -243,7 +243,7 @@ describe('JSONCache Test Suite', function () {
 
     });
 
-    describe('Error and hooks handling', function() {
+    describe('Error and hooks handling', function () {
 
         it('should call ontry exactly once on a successful get', function () {
 
@@ -417,7 +417,7 @@ describe('JSONCache Test Suite', function () {
 
     });
 
-    describe('Expiration handling', function() {
+    describe('Expiration handling', function () {
 
         it('should not return an expired item from the cache', function () {
             expect(window.localStorage.length).toBe(0);
@@ -463,7 +463,7 @@ describe('JSONCache Test Suite', function () {
 
     });
 
-    describe('JSONCache.clean', function() {
+    describe('JSONCache.clean', function () {
 
         it('should not fail cleaning an empty cache', function () {
             expect(window.localStorage.length).toBe(0);
@@ -518,12 +518,12 @@ describe('JSONCache Test Suite', function () {
 
     });
 
-    describe('Cache size tracking', function() {
+    describe('Cache size tracking', function () {
 
         var timestamp;
         var responses;
 
-        beforeEach(function() {
+        beforeEach(function () {
 
             timestamp = 1000;
             responses = [];
@@ -539,13 +539,14 @@ describe('JSONCache Test Suite', function () {
                 }
             });
 
-            spyOn(JSONCache, '_getTime').andCallFake(function() {
-                return timestamp += 100;
+            spyOn(JSONCache, '_getTime').andCallFake(function () {
+                timestamp += 100;
+                return timestamp;
             });
 
         });
 
-        it('should update cache size on single add', function() {
+        it('should update cache size on single add', function () {
 
             responses = [ 'abc' ];
 
@@ -554,7 +555,7 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(10); // == len('"abc"') * 2
 
         });
-        it('should update cache size on multiple adds', function() {
+        it('should update cache size on multiple adds', function () {
 
             responses = [ 'a', 'ab', 'abc' ];
 
@@ -565,7 +566,7 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(24); // == ( len('"a"') + len('"ab"') + len('"abc"') ) * 2
 
         });
-        it('should not increase cache size counter when not actually adding anything', function() {
+        it('should not increase cache size counter when not actually adding anything', function () {
 
             responses = [ 'abc', 'xyz' ];
 
@@ -575,7 +576,7 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(10); // == len('"abc"') * 2
 
         });
-        it('should update cache size on clear() all', function() {
+        it('should update cache size on clear() all', function () {
 
             responses = [ 'abc' ];
 
@@ -585,7 +586,7 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(0);
 
         });
-        it('should update cache size on clear() for specific items', function() {
+        it('should update cache size on clear() for specific items', function () {
 
             responses = [ 'a', 'ab', 'abc' ];
 
@@ -601,7 +602,7 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(0);
 
         });
-        it('should not get confused when removing a non-existant entry', function() {
+        it('should not get confused when removing a non-existant entry', function () {
 
             responses = [ 'abc' ];
 
@@ -611,7 +612,7 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(10);
 
         });
-        it('should update cache size on clean()', function() {
+        it('should update cache size on clean()', function () {
 
             JSONCache.settings.itemLifetime = 150;
 
@@ -626,7 +627,7 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(10);
 
         });
-        it('should update cache size on purgeOldest()', function() {
+        it('should update cache size on purgeOldest()', function () {
 
             responses = [ 'a', 'ab', 'abc' ];
 
@@ -638,7 +639,7 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(18); // == ( len('"ab"') + len('"abc"') ) * 2
 
         });
-        it('should not throw an Error when the cache size is met exactly', function() {
+        it('should not throw an Error when the cache size is met exactly', function () {
 
             JSONCache.settings.maxCacheSize = 6;
 
@@ -647,7 +648,7 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data1.json');
 
         });
-        it('should throw an Error when the cache size is exceeded', function() {
+        it('should throw an Error when the cache size is exceeded', function () {
 
             JSONCache.settings.maxCacheSize = 5;
 
@@ -669,9 +670,9 @@ describe('JSONCache Test Suite', function () {
 
     });
 
-    describe('Cache eviction policy', function() {
+    describe('Cache eviction policy', function () {
 
-        xit('should evict older entries when cache size grows beyond its limits', function() {
+        xit('should evict older entries when cache size grows beyond its limits', function () {
 
             // TODO
 
