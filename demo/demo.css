@@ -57,12 +57,13 @@ h2 {
 	color: gray;
 	padding: 0;
 	margin: 0 10px 0 0;
+	white-space: pre;
 }
 #jc-console li.jc-neutral .jc-message {
 	color: black;
 }
 #jc-console li.jc-error .jc-message {
-	color: rgb(150,0,0);
+	color: rgb(200,0,0);
 }
 #jc-console li.jc-success .jc-message {
 	color: rgb(0,100,0);
@@ -150,21 +151,21 @@ body.jc-noRangeInput #jc-settings label {
 		top: 50px;
 		left: 10px;
 		right: 244px;
-		height: 440px;
+		height: 490px;
 	}
 	#jc-console ol {
-		height: 425px;
+		height: 475px;
 	}
 	#jc-actions {
 		position: absolute;
 		top: 50px;
 		right: 10px;
 		width: 200px;
-		height: 210px;
+		height: 260px;
 	}
 	#jc-settings {
 		position: absolute;
-		top: 290px;
+		top: 340px;
 		right: 10px;
 		height: 200px;
 		width: 200px;
