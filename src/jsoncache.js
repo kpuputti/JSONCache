@@ -39,7 +39,10 @@
         itemLifetime: 5 * 60 * 1000,
 
         // Maximum size allowed for the cache, in bytes; null for unlimited (by JSONCache that is).
-        maxCacheSize: 2621440
+        maxCacheSize: 2621440,
+
+        // Whether to automatically evict older entries to make space for new ones when the cache fills up (if false, Errors are thrown instead)
+        autoEvict: true
     };
 
     // Namespace for all the code.
@@ -98,21 +101,42 @@
         var stringified = JSON.stringify(data);
         var addedLen = stringified.length;
         var timestamp = JSONCache._getTime();
+        var newSize = function () {
+            return JSONCache.getCacheSize() + addedLen * 2;
+        };
+        var tryAdd = function () {
+            if (newSize() > settings.maxCacheSize) {
+                throw new Error('Cache add would exceed maxCacheSize (' + newSize() + ' > ' + settings.maxCacheSize + ')');
+            }
+            try {
+                window.localStorage[KEY_PREF_DATA + url] = stringified;
+                window.localStorage[KEY_PREF_TIME + url] = timestamp;
+                addToCacheSize(addedLen);
+            } catch (e) {
+                throw new Error('Error adding data to localStorage, quota might be full.');
+            }
+        };
 
-        if (JSONCache.getCacheSize() + addedLen * 2 > settings.maxCacheSize) {
-            throw new Error('Cache add would exceed maxCacheSize (' + (JSONCache.getCacheSize() + addedLen * 2) + ' > ' + settings.maxCacheSize + ')');
+        if (!settings.autoEvict) { // let's not use any kind of eviction policy - the add simply succeeds or fails with an Error
+            tryAdd();
+            return;
         }
 
-        try {
-            window.localStorage[KEY_PREF_DATA + url] = stringified;
-            window.localStorage[KEY_PREF_TIME + url] = timestamp;
-            addToCacheSize(addedLen);
-        } catch (e) {
-            throw new Error('Error adding data to localStorage, quota might be full.');
+        while (true) {
+            try {
+                tryAdd();
+                return;
+            } catch (e) {
+                if (JSONCache.getCacheSize() === 0) {
+                    throw new Error('Cache add would exceed maxCacheSize (' + newSize() + ' > ' + settings.maxCacheSize + ') even after autoEvicting everything');
+                }
+                JSONCache.purgeOldest(); // try to make space for the new item by evicting the oldest entry
+            }
         }
     };
 
     // Returns the size of the current cache (as thought to be by JSONCache), in bytes.
+    // TODO: Add option to also return size with key lengths taken into account..?
     JSONCache.getCacheSize = function () {
         var size = parseInt(window.localStorage[KEY_SIZE_TOTAL], 10);
         return isNaN(size) ? 0 : size;
