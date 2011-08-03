@@ -638,6 +638,32 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(18); // == ( len('"ab"') + len('"abc"') ) * 2
 
         });
+        it('should not throw an Error when the cache size is met exactly', function() {
+
+            JSONCache.settings.maxCacheSize = 6;
+
+            responses = [ 'a' ]; // == 6 bytes
+
+            JSONCache.getCachedJSON('data1.json');
+
+        });
+        it('should throw an Error when the cache size is exceeded', function() {
+
+            JSONCache.settings.maxCacheSize = 5;
+
+            responses = [ 'a' ]; // == 6 bytes
+
+            var errorThrown = false;
+
+            try {
+                JSONCache.getCachedJSON('data1.json');
+            } catch (e) {
+                errorThrown = true;
+            }
+
+            expect(errorThrown).toBeTruthy();
+
+        });
 
         // TODO: Take keys into account in the cache size..?
 

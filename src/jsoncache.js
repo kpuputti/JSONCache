@@ -96,13 +96,19 @@
     // and will only get serialized/stringified here.
     var addToCache = function (url, data) {
         var stringified = JSON.stringify(data);
+        var addedLen = stringified.length;
         var timestamp = JSONCache._getTime();
+
+        if (JSONCache.getCacheSize() + addedLen * 2 > settings.maxCacheSize) {
+            throw new Error('Cache add would exceed maxCacheSize (' + (JSONCache.getCacheSize() + addedLen * 2) + ' > ' + settings.maxCacheSize + ')');
+        }
+
         try {
             window.localStorage[KEY_PREF_DATA + url] = stringified;
             window.localStorage[KEY_PREF_TIME + url] = timestamp;
-            addToCacheSize(stringified.length);
+            addToCacheSize(addedLen);
         } catch (e) {
-            log('Error adding data to localStorage, quota might be full.');
+            throw new Error('Error adding data to localStorage, quota might be full.');
         }
     };
 
