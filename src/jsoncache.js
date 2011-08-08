@@ -15,6 +15,9 @@
 
 	"use strict"; // trigger ECMAScript 5 Strict Mode
 
+    // Constants.
+    var KEY_SIZE_TOTAL = 'JSONCache size';
+
     // Configuration.
     var settings = {
 
@@ -31,7 +34,10 @@
         waitTime: 200,
 
         // Cache item validity lifetime in milliseconds.
-        itemLifetime: 5 * 60 * 1000
+        itemLifetime: 5 * 60 * 1000,
+
+        // Maximum size allowed for the cache, in bytes; null for unlimited (by JSONCache that is).
+        maxCacheSize: 2621440
     };
 
     var log = function () {
@@ -56,6 +62,29 @@
         return jsonOk && localStorageOk;
     }());
 
+    // Adds the given number of characters to the current size of the cache.
+    // Use negative char counts to subtract.  Removes the size-tracking key
+    // whenever cache size is zero.
+    var addToCacheSize = function (charCount) {
+        if (typeof charCount !== 'number') {
+            throw new Error('Cannot update cache total size without a char count');
+        }
+        var current = parseInt(window.localStorage[KEY_SIZE_TOTAL], 10);
+        if (isNaN(current)) {
+            current = 0;
+        }
+        var updated = current + charCount * 2; // assume 2-byte-wide characters
+        if (updated <= 0) {
+            // updated < 0 means there's an inconsitency between what JSONCache thinks is in localStorage
+            // and what actually is.  If this happens, it's either due to a bug in JSONCache or the user
+            // manipulating the cache by bypassing JSONCache.  updated === 0 is OK though.
+            // TODO: Should we rather throw an Error here..?
+            delete window.localStorage[KEY_SIZE_TOTAL];
+        } else {
+            window.localStorage[KEY_SIZE_TOTAL] = updated;
+        }
+    };
+
     var addToCache = function (key, data) {
         try {
             window.localStorage[key] = data;
@@ -67,6 +96,12 @@
     // Namespace for all the code.
     var JSONCache = {};
     JSONCache.settings = settings;
+
+    // Returns the size of the current cache (as thought to be by JSONCache), in bytes.
+    JSONCache.getCacheSize = function () {
+        var size = parseInt(window.localStorage[KEY_SIZE_TOTAL], 10);
+        return isNaN(size) ? 0 : size;
+    };
 
     var cacheItemValid = function (timestr) {
         var time = parseInt(timestr, 10);
@@ -80,6 +115,10 @@
     JSONCache.clear = function (url) {
         if (url) {
             // Remove a particular item.
+            if (window.localStorage['JSONCache data ' + url]) {
+                var charsToRemove = window.localStorage['JSONCache data ' + url].length;
+                addToCacheSize(-1 * charsToRemove);
+            }
             window.localStorage.removeItem('JSONCache data ' + url);
             window.localStorage.removeItem('JSONCache time ' + url);
         } else {
@@ -103,6 +142,9 @@
             for (i = 0; i < len; ++i) {
                 window.localStorage.removeItem(keysToBeRemoved[i]);
             }
+
+            // Update cache total size.
+            delete window.localStorage[KEY_SIZE_TOTAL];
         }
     };
 
@@ -148,8 +190,7 @@
         }
         // Remove the oldest item data and time records.
         if (timeOldest !== null) {
-            window.localStorage.removeItem(timeKeyOldest.replace(' time ', ' data '));
-            window.localStorage.removeItem(timeKeyOldest);
+            JSONCache.clear(timeKeyOldest.replace('JSONCache time ', ''));
         }
     };
 
@@ -201,16 +242,22 @@
 
         if (cachedData && cacheItemValid(cachedTime)) {
             log('Value found from cache for url:', url);
-            success(JSON.parse(cachedData));
+            if (typeof success === 'function') {
+                success(JSON.parse(cachedData));
+            }
         } else {
             log('Value not found in cache fetching data from url:', url);
 
             // Wrap the success function to cache the data.
             options.success = function (data) {
+                var stringified = JSON.stringify(data);
                 log('Fetched data, adding to cache for url:', url);
-                addToCache(dataKey, JSON.stringify(data));
+                addToCache(dataKey, stringified);
                 addToCache(timeKey, JSONCache._getTime());
-                success(data);
+                addToCacheSize(stringified.length);
+                if (typeof success === 'function') {
+                    success(data);
+                }
             };
             // TODO: add support for user defined error function handling.
 

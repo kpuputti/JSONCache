@@ -107,6 +107,56 @@ $(function() {
 
 	});
 
+    // Dumps some statistics out of JSONCache.
+    $('#jc-dumpStats').click(function() {
+
+        var padLeft = function(string, toLen) {
+
+            string = '' + string;
+            toLen = toLen || 10;
+
+            while (string.length < toLen) {
+                string = ' ' + string;
+            }
+
+            return string;
+
+        };
+
+        var actualSize = 0;
+        var keysUsed = 0;
+
+        (function() {
+
+            var dataKeyRe = /^JSONCache data /;
+            var key;
+            var len = window.localStorage.length;
+
+            for (var i = 0; i < len; ++i) {
+                key = window.localStorage.key(i);
+                if (dataKeyRe.test(key)) {
+                    actualSize += window.localStorage[key].length;
+                    keysUsed += 2;
+                }
+            }
+
+            if (keysUsed > 0)
+                keysUsed++; // take the KEY_SIZE_TOTAL-key into account
+
+            actualSize *= 2; // assume 2-byte wide characters
+
+        })();
+
+        var cacheLimited = typeof JSONCache.settings.maxCacheSize === 'number';
+
+        log('Cache max size:       ' + (cacheLimited ? padLeft(JSONCache.settings.maxCacheSize) + ' bytes' : padLeft('n/a')));
+        log('Cache size reported:  ' + padLeft(JSONCache.getCacheSize()) + ' bytes');
+        log('Cache size actual:    ' + padLeft(actualSize) + ' bytes', JSONCache.getCacheSize() === actualSize ? undefined : 'error');
+        log('Cache utilization:    ' + (cacheLimited ? padLeft('~' + Math.round(actualSize * 100 / JSONCache.settings.maxCacheSize)) + ' %' : padLeft('n/a')));
+        log('Keys in localStorage: ' + padLeft(keysUsed));
+
+    });
+
 	// Resets the "console" on the page.
 	$resetConsole.click(function() {
 
