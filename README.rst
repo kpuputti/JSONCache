@@ -9,6 +9,12 @@ unnecessary network requests.
 The primary goal of the library is to minimize network requests for
 mobile devices.
 
+Licence
+-------
+
+JSONCache is Licenced under the MIT licence. See LICENCE file for more
+information.
+
 Requirements
 ------------
 
