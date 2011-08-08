@@ -12,7 +12,7 @@ mobile devices.
 Licence
 -------
 
-JSONCache is Licenced under the MIT licence. See LICENCE file for more
+JSONCache is licenced under the MIT licence. See LICENCE file for more
 information.
 
 Requirements
