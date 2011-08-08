@@ -1,17 +1,17 @@
 /**
  * @preserve JSONCache version #VERSION#
  *
- * Copyright (c) 2011 Kimmo Puputti
- * Licenced under the MIT licence.
- * See LICENCE file at https://github.com/kpuputti/JSONCache/
- * for more information.
- *
  * Authors:
  * Kimmo Puputti (first.last@futurice.com)
  * Jarno Rantanen (first.last@futurice.com)
  *
  * See README.rst at https://github.com/kpuputti/JSONCache
  * for requirements and usage.
+ *
+ * Copyright (c) 2011 Kimmo Puputti
+ * Licenced under the MIT licence.
+ * See LICENCE file at https://github.com/kpuputti/JSONCache/
+ * for more information.
  */
 /*jslint white: true, devel: true, onevar: false, undef: true, nomen: false,
   regexp: true, plusplus: false, bitwise: true, newcap: true, maxerr: 50,
