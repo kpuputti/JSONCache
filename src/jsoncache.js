@@ -3,7 +3,8 @@
  *
  * Copyright (c) 2011 Kimmo Puputti
  * Licenced under the MIT licence.
- * See LICENCE file for more information.
+ * See LICENCE file at https://github.com/kpuputti/JSONCache/
+ * for more information.
  *
  * Authors:
  * Kimmo Puputti (first.last@futurice.com)
