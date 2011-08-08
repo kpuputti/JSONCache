@@ -1,7 +1,9 @@
 /**
  * @preserve JSONCache version #VERSION#
  *
- * Author: Kimmo Puputti (kpuputti at gmail)
+ * Authors:
+ * Kimmo Puputti (first.last@futurice.com)
+ * Jarno Rantanen (first.last@futurice.com)
  *
  * See README.rst at https://github.com/kpuputti/JSONCache
  * for requirements and usage.
