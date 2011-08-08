@@ -7,6 +7,8 @@
 
 describe('JSONCache Test Suite.', function () {
 
+    "use strict"; // trigger ECMAScript 5 Strict Mode
+
     var testData;
     var _numTries = JSONCache.settings.numTries;
     var _waitTime = JSONCache.settings.waitTime;
@@ -31,6 +33,8 @@ describe('JSONCache Test Suite.', function () {
         JSONCache.settings.waitTime = _waitTime;
         JSONCache.settings.itemLifetime = _itemLifetime;
     });
+
+    // Environment requirements:
 
     it('should satisfy the requirements', function () {
 
@@ -65,6 +69,8 @@ describe('JSONCache Test Suite.', function () {
         expect(window.localStorage.length).toBe(1);
         expect(window.localStorage['söme key']).toBe('söme dätä');
     });
+
+    // Basic functionality:
 
     it('should return correct data and cache it', function () {
 
@@ -104,7 +110,7 @@ describe('JSONCache Test Suite.', function () {
         });
     });
 
-    // JSONCache.clear
+    // JSONCache.clear:
 
     it('should not fail trying to clear an item from an empty cache', function () {
         expect(window.localStorage.length).toBe(0);
@@ -152,7 +158,7 @@ describe('JSONCache Test Suite.', function () {
         expect(window.localStorage['öther kéy']).toBe('öther dätä');
     });
 
-    // JSONCache.purgeOldest
+    // JSONCache.purgeOldest:
 
     it('should not fail trying to purge with an empty cache', function () {
         expect(window.localStorage.length).toBe(0);
@@ -210,7 +216,38 @@ describe('JSONCache Test Suite.', function () {
         expect(window.localStorage['öther key 2']).toBe('öther dätä 2');
     });
 
-    it('should generate error if all requests time out', function () {
+    // Error and hooks handling:
+
+    it('should call ontry exactly once on a successful get', function () {
+
+        // Mock the proxy.
+        spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
+            window.setTimeout(function () {
+                options.success(testData);
+            }, 1);
+
+        });
+
+        var done = false;
+        var numTries = 0;
+
+        JSONCache.getCachedJSON('data.json', {
+            success: function () {
+                done = true;
+            },
+            ontry: function () {
+                numTries++;
+            }
+        });
+
+        waitsFor(function () {
+            return done;
+        }, 'ongiveup function', 10000);
+        runs(function () {
+            expect(numTries).toBe(1);
+        });
+    });
+    it('should call ongiveup if all requests time out', function () {
 
         // Make the waiting time shorter for faster tests.
         JSONCache.settings.waitTime = 2;
@@ -228,7 +265,7 @@ describe('JSONCache Test Suite.', function () {
         var returnedStatus;
 
         JSONCache.getCachedJSON('data.json', {
-            JSONCacheError: function (status) {
+            ongiveup: function (status) {
                 done = true;
                 returnedStatus = status;
             }
@@ -236,13 +273,13 @@ describe('JSONCache Test Suite.', function () {
 
         waitsFor(function () {
             return done;
-        }, 'JSONCacheError function', 10000);
+        }, 'ongiveup function', 10000);
         runs(function () {
             expect(returnedStatus).toBe('timeout');
             expect(JSONCache._getJSONProxy.callCount).toBe(5);
         });
     });
-    it('should generate error if all requests time out with changed number of tries', function () {
+    it('should call ongiveup, and ontry with changed number of tries', function () {
 
         JSONCache.settings.waitTime = 10;
         JSONCache.settings.numTries = 3;
@@ -256,11 +293,11 @@ describe('JSONCache Test Suite.', function () {
         var done = false;
         var returnedStatus;
 
-        var retryHook = jasmine.createSpy();
+        var ontry = jasmine.createSpy();
 
         JSONCache.getCachedJSON('data.json', {
-            retryHook: retryHook,
-            JSONCacheError: function (status) {
+            ontry: ontry,
+            ongiveup: function (status) {
                 done = true;
                 returnedStatus = status;
             }
@@ -268,15 +305,51 @@ describe('JSONCache Test Suite.', function () {
 
         waitsFor(function () {
             return done;
-        }, 'JSONCacheError function', 10000);
+        }, 'ongiveup function', 10000);
         runs(function () {
             expect(returnedStatus).toBe('timeout');
             expect(JSONCache._getJSONProxy.callCount).toBe(3);
-            expect(retryHook.callCount).toBe(3);
-            expect(retryHook.argsForCall).toEqual([[1], [2], [3]]);
+            expect(ontry.callCount).toBe(3);
+            expect(ontry.argsForCall).toEqual([[1], [2], [3]]);
         });
     });
-    it('should call the error hook properly', function () {
+    it('should not call ongiveup when first requests fail but last one succeeds', function () {
+
+        JSONCache.settings.waitTime = 10;
+        JSONCache.settings.numTries = 3;
+
+        var tryNum = 1;
+
+        spyOn(JSONCache, '_getJSONProxy').andCallFake(function (url, options) {
+            window.setTimeout(function () {
+                if (tryNum++ < JSONCache.settings.numTries) {
+                    options.error(null, 'timeout', null);
+                } else {
+                    options.success(testData);
+                }
+            }, 1);
+        });
+
+        var done = false;
+        var gaveUp = false;
+
+        JSONCache.getCachedJSON('data.json', {
+            success: function () {
+                done = true;
+            },
+            ongiveup: function () {
+                gaveUp = true;
+            }
+        });
+
+        waitsFor(function () {
+            return done;
+        }, 'success function', 1000);
+        runs(function () {
+            expect(gaveUp).toBeFalsy();
+        });
+    });
+    it('should call the onerror callback properly', function () {
 
         JSONCache.settings.waitTime = 10;
 
@@ -286,13 +359,13 @@ describe('JSONCache Test Suite.', function () {
             }, 10);
         });
 
-        var errorHook = jasmine.createSpy();
+        var onerror = jasmine.createSpy();
         var done = false;
         var returnedStatus;
 
         JSONCache.getCachedJSON('data.json', {
-            errorHook: errorHook,
-            JSONCacheError: function (status) {
+            onerror: onerror,
+            ongiveup: function (status) {
                 done = true;
                 returnedStatus = status;
             }
@@ -300,12 +373,12 @@ describe('JSONCache Test Suite.', function () {
 
         waitsFor(function () {
             return done;
-        }, 'JSONCacheError function', 10000);
+        }, 'ongiveup function', 10000);
         runs(function () {
             expect(returnedStatus).toBe('timeout');
             expect(JSONCache._getJSONProxy.callCount).toBe(5);
-            expect(errorHook.callCount).toBe(5);
-            expect(errorHook.argsForCall).toEqual([
+            expect(onerror.callCount).toBe(5);
+            expect(onerror.argsForCall).toEqual([
                 [null, 'timeout', null, 1],
                 [null, 'timeout', null, 2],
                 [null, 'timeout', null, 3],
@@ -314,6 +387,8 @@ describe('JSONCache Test Suite.', function () {
             ]);
         });
     });
+
+    // Expiration handling:
 
     it('should not return an expired item from the cache', function () {
         expect(window.localStorage.length).toBe(0);
@@ -356,6 +431,8 @@ describe('JSONCache Test Suite.', function () {
             expect(JSONCache._getJSONProxy.callCount).toBe(1);
         });
     });
+
+    // JSONCache.clean:
 
     it('should not fail cleaning an empty cache', function () {
         expect(window.localStorage.length).toBe(0);

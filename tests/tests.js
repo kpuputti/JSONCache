@@ -273,7 +273,7 @@
         };
 
         JSONCache.getCachedJSON('data.json', {
-            JSONCacheError: function (status) {
+            ongiveup: function (status) {
                 eq(status, 'timeout', 'Error status should be correct.');
                 eq(proxyCallCount, 5, 'Proxy function should be called 5 times.');
                 start();
@@ -298,13 +298,13 @@
         };
 
         var retryArgs = [];
-        var retryHook = function (tryNumber) {
+        var ontry = function (tryNumber) {
             retryArgs.push(tryNumber);
         };
 
         JSONCache.getCachedJSON('data.json', {
-            retryHook: retryHook,
-            JSONCacheError: function (status) {
+            ontry: ontry,
+            ongiveup: function (status) {
                 eq(status, 'timeout', 'Error status should be correct.');
                 eq(proxyCallCount, 6, 'Proxy function should be called the correct amount of times.');
                 deepEqual(retryArgs, [1, 2, 3, 4, 5, 6],
@@ -329,14 +329,14 @@
 
         var errorCallCount = 0;
         var errorArgs = [];
-        var errorHook = function (jqXHR, textStatus, errorThrown, tryNumber) {
+        var onerror = function (jqXHR, textStatus, errorThrown, tryNumber) {
             errorCallCount++;
             errorArgs.push(textStatus + ' ' + tryNumber);
         };
 
         JSONCache.getCachedJSON('data.json', {
-            errorHook: errorHook,
-            JSONCacheError: function (status) {
+            onerror: onerror,
+            ongiveup: function (status) {
                 eq(status, 'timeout', 'Error status should be correct.');
                 eq(proxyCallCount, 5, 'Proxy function should be called the correct amount of times.');
                 eq(errorCallCount, 5, 'Error function should be called the correct amount of times.');
