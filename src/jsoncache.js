@@ -1,6 +1,10 @@
 /**
  * @preserve JSONCache version #VERSION#
  *
+ * Copyright (c) 2011 Kimmo Puputti
+ * Licenced under the MIT licence.
+ * See LICENCE file for more information.
+ *
  * Authors:
  * Kimmo Puputti (first.last@futurice.com)
  * Jarno Rantanen (first.last@futurice.com)
