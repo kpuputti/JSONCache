@@ -126,9 +126,9 @@
             }
         };
 
-        // let's not use any kind of eviction policy - the add simply
-        // succeeds or fails with an Error
         if (!settings.autoEvict) {
+            // let's not use any kind of eviction policy - the add
+            // simply succeeds or fails with an Error
             tryAdd();
             return;
         }
