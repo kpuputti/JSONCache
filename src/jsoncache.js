@@ -85,13 +85,8 @@
     // cache. Use negative char counts to subtract. Removes the
     // size-tracking key whenever cache size is zero.
     var addToCacheSize = function (charCount) {
-        if (typeof charCount !== 'number') {
-            throw new Error('Cannot update cache total size without a char count');
-        }
         var current = parseInt(window.localStorage[KEY_SIZE_TOTAL], 10);
-        if (isNaN(current)) {
-            current = 0;
-        }
+        current = isNaN(current) ? 0 : current;
         var updated = current + charCount * 2; // assume 2-byte-wide characters
         if (updated <= 0) {
             // updated < 0 means there's an inconsitency between what
