@@ -50,24 +50,85 @@ Basic example:
         }
     });
 
-Example with error hooks to display status info to user:
+Example with function hooks to display status info to user:
 
 ::
 
     // Message container to show info to user.
     var message = $('#message');
 
-    JSONCache.getCachedJSON(
+    JSONCache.getCachedJSON('http://example.com/data.json', {
+        ontry: function (tryNumber) {
+            // Called before each fetch attempt.
+            console.log('Fetch number:', tryNumber);
+        },
         onerror: function (jqXHR, textStatus, errorThrown, tryNumber) {
+            // Called when jQuery.ajax fails.
             message.text('Failed fetch number ' + tryNumber + '. Trying again...');
         },
         ongiveup: function (status) {
-            message.text('Network failure, cannot fetch data.');
+            // Called when all fetch attemps fail.
+            if (status === 'timeout') {
+                message.text('Network failure, cannot fetch data.');
+            } else {
+                message.text('Failed to get data.');
+            }
         },
         success: function (data) {
             message.text('Data fetched successfully!');
         }
     );
+
+Configuration
+-------------
+
+Global configuration:
+~~~~~~~~~~~~~~~~~~~~~
+
+Global configuration options can be set by modifying the
+`JSONCache.options` object directly. Available options:
+
+`JSONCache.options.debug`: (boolean) toggle console debugging
+
+`JSONCache.options.numTries`: (number) number of times the JSON is
+                              attempted to fetch on network errors
+
+`JSONCache.options.waitTime`: (number) time in milliseconds to wait
+                              after a network error before a re-try.
+                              Note that this time is doubled after
+                              each try.
+
+`JSONCache.options.itemLifetime`: (number) Cache item validity
+                                  lifetime in milliseconds.
+
+`JSONCache.options.maxCacheSize`: (number) Maximum cache size in bytes
+                                  that JSONCache uses. null for
+                                  unlimited size.
+
+`JSONCache.options.autoEvict`: (boolean) Flag to indicate whether old
+                               entries should be removed from the
+                               cache if the cache fills up.
+
+Function hooks:
+~~~~~~~~~~~~~~~
+
+Function hooks can be given in the options object in
+`JSONCache.getCachedJSON` function call. Available hooks:
+
+`success(data)`: Called with the requested JSON data if it was found
+    in the cache or successfully fetched.
+
+`ontry(tryNumber)`: Called before each network fetch attemp. The try
+    counter is provided as an argument (starting from 1).
+
+`onerror(jqXHR, textStatus, errorThrown, tryNumber)`: Called when a
+    fetch fails. The arguments are forwarded from the jQuery error
+    hook in addition to the try number.
+
+`ongiveup(status)`: Called when all attemps fail or if there is an
+    error with the cache. Possible statuses are `timeout` when all
+    attemps failed and `addfailure` when there was a problem when
+    adding data to localStorage.
 
 Testing
 -------
@@ -91,6 +152,8 @@ Old QUnit tests are still available in the same index.html.
 
 TODO
 ----
+
+- Add support for item-specific cache lifetime.
 
 - Add better support for user defined error handling.
 

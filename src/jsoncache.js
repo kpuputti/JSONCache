@@ -39,7 +39,8 @@
         // Number of times the JSON is attempted to fetch on network errors.
         numTries: 5,
 
-        // Time in milliseconds to wait after each timeout before a re-try.
+        // Time in milliseconds to wait after a network error before a
+        // re-try. Note that this time is doubled after each try.
         waitTime: 200,
 
         // Cache item validity lifetime in milliseconds.
@@ -50,8 +51,7 @@
         maxCacheSize: 2621440,
 
         // Whether to automatically evict older entries to make space
-        // for new ones when the cache fills up (if false, Errors are
-        // thrown instead)
+        // for new ones when the cache fills up.
         autoEvict: true
     };
 
