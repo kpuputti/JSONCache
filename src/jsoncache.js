@@ -114,8 +114,11 @@
         };
         var tryAdd = function () {
             if (newSize() > settings.maxCacheSize) {
-                throw new Error('Cache add would exceed maxCacheSize (' + newSize() +
-                                ' > ' + settings.maxCacheSize + ')');
+                JSONCache.clean();
+                if (newSize() > settings.maxCacheSize) {
+                    throw new Error('Cache add would exceed maxCacheSize (' + newSize() +
+                                    ' > ' + settings.maxCacheSize + ')');
+                }
             }
             try {
                 window.localStorage[KEY_PREF_DATA + url] = stringified;
@@ -303,7 +306,14 @@
             // Wrap the success function to cache the data.
             options.success = function (data) {
                 log('Fetched data, adding to cache for url:', url);
-                addToCache(url, data);
+                try {
+                    addToCache(url, data);
+                } catch (e) {
+                    if (typeof options.ongiveup === 'function') {
+                        options.ongiveup('addfailure');
+                        return;
+                    }
+                }
                 if (typeof success === 'function') {
                     success(data);
                 }
