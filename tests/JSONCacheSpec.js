@@ -643,33 +643,62 @@ describe('JSONCache Test Suite', function () {
             expect(JSONCache.getCacheSize()).toBe(18); // == ( len('"ab"') + len('"abc"') ) * 2
 
         });
-        it('should not throw an Error when the cache size is met exactly', function () {
+        it('should not call ongiveup when the cache size is met exactly', function () {
 
             JSONCache.settings.maxCacheSize = 6;
             JSONCache.settings.autoEvict = false;
 
             responses = [ 'a' ]; // == 6 bytes
 
-            JSONCache.getCachedJSON('data1.json');
+            var successCalled = 0;
+            var giveupCalled = 0;
 
+            JSONCache.getCachedJSON('data1.json', {
+                success: function (data) {
+                    successCalled++;
+                },
+                ongiveup: function (status) {
+                    giveupCalled++;
+                }
+            });
+
+            waitsFor(function () {
+                return successCalled > 0;
+            });
+            runs(function () {
+                expect(successCalled).toBe(1);
+                expect(giveupCalled).toBe(0);
+            });
         });
-        it('should throw an Error when the cache size is exceeded', function () {
+        it('should call ongiveup when the cache size is exceeded', function () {
 
             JSONCache.settings.maxCacheSize = 5;
             JSONCache.settings.autoEvict = false;
 
             responses = [ 'a' ]; // == 6 bytes
 
-            var errorThrown = false;
+            var successCalled = 0;
+            var giveupCalled = 0;
+            var giveupStatus;
 
-            try {
-                JSONCache.getCachedJSON('data1.json');
-            } catch (e) {
-                errorThrown = true;
-            }
+            JSONCache.getCachedJSON('data1.json', {
+                success: function (data) {
+                    successCalled++;
+                },
+                ongiveup: function (status) {
+                    giveupCalled++;
+                    giveupStatus = status;
+                }
+            });
 
-            expect(errorThrown).toBeTruthy();
-
+            waitsFor(function () {
+                return giveupCalled > 0;
+            });
+            runs(function () {
+                expect(successCalled).toBe(0);
+                expect(giveupCalled).toBe(1);
+                expect(giveupStatus).toBe('addfailure');
+            });
         });
         it('should evict older entries when cache size grows beyond its limits', function () {
 
@@ -683,14 +712,16 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data2.json'); // ==  8 bytes
             JSONCache.getCachedJSON('data3.json'); // == 10 bytes
 
-            // Note that we COULD fit [1,3] instead of just [3] to make better use of the cache but our policy is FIFO, so too bad
+            // Note that we COULD fit [1,3] instead of just [3] to
+            // make better use of the cache but our policy is FIFO, so
+            // too bad
 
             expect(window.localStorage['JSONCache data data1.json']).toBeUndefined();
             expect(window.localStorage['JSONCache data data2.json']).toBeUndefined();
             expect(window.localStorage['JSONCache data data3.json']).toBeTruthy();
 
         });
-        it('should throw an error if the item won\'t fit even after autoEvicting other items', function () {
+        it('should call ongiveup if the item won\'t fit even after autoEvicting other items', function () {
 
             expect(JSONCache.settings.autoEvict).toBeTruthy();
 
@@ -701,16 +732,28 @@ describe('JSONCache Test Suite', function () {
             JSONCache.getCachedJSON('data1.json'); // ==  6 bytes
             JSONCache.getCachedJSON('data2.json'); // ==  6 bytes
 
-            var errorThrown = false;
+            var successCalled = 0;
+            var giveupCalled = 0;
+            var giveupStatus;
 
-            try {
-                JSONCache.getCachedJSON('data3.json'); // == 14 bytes
-            } catch (e) {
-                errorThrown = true;
-            }
+            JSONCache.getCachedJSON('data3.json', {  // == 14 bytes
+                success: function (data) {
+                    successCalled++;
+                },
+                ongiveup: function (status) {
+                    giveupCalled++;
+                    giveupStatus = status;
+                }
+            });
 
-            expect(errorThrown).toBeTruthy();
-
+            waitsFor(function () {
+                return giveupCalled > 0;
+            });
+            runs(function () {
+                expect(successCalled).toBe(0);
+                expect(giveupCalled).toBe(1);
+                expect(giveupStatus).toBe('addfailure');
+            });
         });
 
     });
