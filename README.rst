@@ -86,49 +86,46 @@ Global configuration:
 ~~~~~~~~~~~~~~~~~~~~~
 
 Global configuration options can be set by modifying the
-`JSONCache.options` object directly. Available options:
+``JSONCache.options`` object directly. Available options:
 
-`JSONCache.options.debug`: (boolean) toggle console debugging
+``JSONCache.options.debug``: (boolean) toggle console debugging
 
-`JSONCache.options.numTries`: (number) number of times the JSON is
-                              attempted to fetch on network errors
+``JSONCache.options.numTries``: (number) number of times the JSON is
+attempted to fetch on network errors
 
-`JSONCache.options.waitTime`: (number) time in milliseconds to wait
-                              after a network error before a re-try.
-                              Note that this time is doubled after
-                              each try.
+``JSONCache.options.waitTime``: (number) time in milliseconds to wait
+after a network error before a re-try. Note that this time is doubled
+after each try.
 
-`JSONCache.options.itemLifetime`: (number) Cache item validity
-                                  lifetime in milliseconds.
+``JSONCache.options.itemLifetime``: (number) Cache item validity
+lifetime in milliseconds.
 
-`JSONCache.options.maxCacheSize`: (number) Maximum cache size in bytes
-                                  that JSONCache uses. null for
-                                  unlimited size.
+``JSONCache.options.maxCacheSize``: (number) Maximum cache size in bytes
+that JSONCache uses. null for unlimited size.
 
-`JSONCache.options.autoEvict`: (boolean) Flag to indicate whether old
-                               entries should be removed from the
-                               cache if the cache fills up.
+``JSONCache.options.autoEvict``: (boolean) Flag to indicate whether old
+entries should be removed from the cache if the cache fills up.
 
 Function hooks:
 ~~~~~~~~~~~~~~~
 
 Function hooks can be given in the options object in
-`JSONCache.getCachedJSON` function call. Available hooks:
+``JSONCache.getCachedJSON`` function call. Available hooks:
 
-`success(data)`: Called with the requested JSON data if it was found
-    in the cache or successfully fetched.
+``success(data)``: Called with the requested JSON data if it was found
+in the cache or successfully fetched.
 
-`ontry(tryNumber)`: Called before each network fetch attemp. The try
-    counter is provided as an argument (starting from 1).
+``ontry(tryNumber)``: Called before each network fetch attemp. The try
+counter is provided as an argument (starting from 1).
 
-`onerror(jqXHR, textStatus, errorThrown, tryNumber)`: Called when a
-    fetch fails. The arguments are forwarded from the jQuery error
-    hook in addition to the try number.
+``onerror(jqXHR, textStatus, errorThrown, tryNumber)``: Called when a
+fetch fails. The arguments are forwarded from the jQuery error hook in
+addition to the try number.
 
-`ongiveup(status)`: Called when all attemps fail or if there is an
-    error with the cache. Possible statuses are `timeout` when all
-    attemps failed and `addfailure` when there was a problem when
-    adding data to localStorage.
+``ongiveup(status)``: Called when all attemps fail or if there is an
+error with the cache. Possible statuses are ``timeout`` when all attemps
+failed and ``addfailure`` when there was a problem when adding data to
+localStorage.
 
 Testing
 -------
@@ -145,7 +142,7 @@ tests can be run by typing:
 
 The command line test runner uses PhantomJS (
 http://www.phantomjs.org/ ). The tests can also be run by opening the
-`tests/index.html` in a browser and clicking on the jasmine test
+``tests/index.html`` in a browser and clicking on the jasmine test
 links.
 
 Old QUnit tests are still available in the same index.html.
