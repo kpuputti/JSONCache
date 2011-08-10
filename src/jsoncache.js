@@ -101,7 +101,7 @@
             // bypassing JSONCache. updated === 0 is OK though.
 
             // TODO: Should we rather throw an Error here..?
-            delete window.localStorage[KEY_SIZE_TOTAL];
+            window.localStorage.removeItem(KEY_SIZE_TOTAL);
         } else {
             window.localStorage[KEY_SIZE_TOTAL] = updated;
         }
@@ -204,7 +204,7 @@
             }
 
             // Update cache total size.
-            delete window.localStorage[KEY_SIZE_TOTAL];
+            window.localStorage.removeItem(KEY_SIZE_TOTAL);
         }
     };
 
