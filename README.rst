@@ -9,6 +9,8 @@ unnecessary network requests.
 The primary goal of the library is to minimize network requests for
 mobile devices.
 
+See also the project page at http://kpuputti.github.com/JSONCache/
+
 Licence
 -------
 
@@ -32,10 +34,10 @@ Usage
 1. Make sure you have all the requirements.
 
 2. Download the minified jsoncache-{version}.min.js file and include
-   it on your page:
+   it on your page.
 
 3. Use the JSONCache.getCachedJSON function instead of jQuery.getJSON
-   to fetch your data:
+   to fetch your data.
 
 JSONCache.getCachedJSON attempts to provide the same API as the
 jQuery.ajax function.
