@@ -20,7 +20,7 @@
 
 (function ($) {
 
-	"use strict"; // trigger ECMAScript 5 Strict Mode
+    "use strict"; // trigger ECMAScript 5 Strict Mode
 
     // Constants.
     var KEY_SIZE_TOTAL = 'JSONCache size';
@@ -45,10 +45,13 @@
         // Cache item validity lifetime in milliseconds.
         itemLifetime: 5 * 60 * 1000,
 
-        // Maximum size allowed for the cache, in bytes; null for unlimited (by JSONCache that is).
+        // Maximum size allowed for the cache, in bytes; null for
+        // unlimited (by JSONCache that is).
         maxCacheSize: 2621440,
 
-        // Whether to automatically evict older entries to make space for new ones when the cache fills up (if false, Errors are thrown instead)
+        // Whether to automatically evict older entries to make space
+        // for new ones when the cache fills up (if false, Errors are
+        // thrown instead)
         autoEvict: true
     };
 
@@ -78,9 +81,9 @@
         return jsonOk && localStorageOk;
     }());
 
-    // Adds the given number of characters to the current size of the cache.
-    // Use negative char counts to subtract.  Removes the size-tracking key
-    // whenever cache size is zero.
+    // Adds the given number of characters to the current size of the
+    // cache. Use negative char counts to subtract. Removes the
+    // size-tracking key whenever cache size is zero.
     var addToCacheSize = function (charCount) {
         if (typeof charCount !== 'number') {
             throw new Error('Cannot update cache total size without a char count');
@@ -91,9 +94,12 @@
         }
         var updated = current + charCount * 2; // assume 2-byte-wide characters
         if (updated <= 0) {
-            // updated < 0 means there's an inconsitency between what JSONCache thinks is in localStorage
-            // and what actually is.  If this happens, it's either due to a bug in JSONCache or the user
-            // manipulating the cache by bypassing JSONCache.  updated === 0 is OK though.
+            // updated < 0 means there's an inconsitency between what
+            // JSONCache thinks is in localStorage and what actually
+            // is. If this happens, it's either due to a bug in
+            // JSONCache or the user manipulating the cache by
+            // bypassing JSONCache. updated === 0 is OK though.
+
             // TODO: Should we rather throw an Error here..?
             delete window.localStorage[KEY_SIZE_TOTAL];
         } else {
@@ -113,7 +119,8 @@
         };
         var tryAdd = function () {
             if (newSize() > settings.maxCacheSize) {
-                throw new Error('Cache add would exceed maxCacheSize (' + newSize() + ' > ' + settings.maxCacheSize + ')');
+                throw new Error('Cache add would exceed maxCacheSize (' + newSize() +
+                                ' > ' + settings.maxCacheSize + ')');
             }
             try {
                 window.localStorage[KEY_PREF_DATA + url] = stringified;
@@ -124,7 +131,9 @@
             }
         };
 
-        if (!settings.autoEvict) { // let's not use any kind of eviction policy - the add simply succeeds or fails with an Error
+        // let's not use any kind of eviction policy - the add simply
+        // succeeds or fails with an Error
+        if (!settings.autoEvict) {
             tryAdd();
             return;
         }
@@ -135,15 +144,20 @@
                 return;
             } catch (e) {
                 if (JSONCache.getCacheSize() === 0) {
-                    throw new Error('Cache add would exceed maxCacheSize (' + newSize() + ' > ' + settings.maxCacheSize + ') even after autoEvicting everything');
+                    throw new Error('Cache add would exceed maxCacheSize (' +
+                                    newSize() + ' > ' + settings.maxCacheSize +
+                                    ') even after autoEvicting everything');
                 }
-                JSONCache.purgeOldest(); // try to make space for the new item by evicting the oldest entry
+                // try to make space for the new item by evicting the oldest entry
+                JSONCache.purgeOldest();
             }
         }
     };
 
-    // Returns the size of the current cache (as thought to be by JSONCache), in bytes.
-    // TODO: Add option to also return size with key lengths taken into account..?
+    // Returns the size of the current cache (as thought to be by
+    // JSONCache), in bytes.
+    // TODO: Add option to also return size with key lengths taken
+    // into account..?
     JSONCache.getCacheSize = function () {
         var size = parseInt(window.localStorage[KEY_SIZE_TOTAL], 10);
         return isNaN(size) ? 0 : size;
