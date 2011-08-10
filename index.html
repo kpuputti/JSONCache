@@ -46,24 +46,40 @@
         <span class="small">by <a href="http://github.com/kpuputti">kpuputti</a></span></h1>
 
       <div class="description">
-        HTML5's localStorage caching layer for fetching JSON data with jQuery.
+        JSONCache is a lightweight library to help with fetching JSON
+        data in flaky networks (etc. with mobile phones).
       </div>
 
+      <p>
+        It caches the requested data in HTML5 localStorage on the
+        client side, and further attempts to fetch the same data
+        (identified by the URL) don't thus need any networking, even
+        if the browser window is closed.
+      </p>
+      <p>
+        The library attempts to fetch the data multiple times to avoid
+        errors with small network interrruptions.
+      </p>
+
       <h2>Dependencies</h2>
-      <p>jQuery (version ?)
-        JSON.parse and JSON.stringify
-        window.localStorage</p>
+      <ul>
+        <li>jQuery (tested with 1.6.2)</li>
+        <li>JSON.parse and JSON.stringify (available in modern browsers)</li>
+        <li>window.localStorage (available in modern browsers)</li>
+      </ul>
       <h2>Install</h2>
       <p>Include the jsoncache-x.y.z.min.js file from the build directory to your site and you're good to go!</p>
+      <h2>Documentation</h2>
+      <p>See <a href="https://github.com/kpuputti/JSONCache">github.com/kpuputti/JSONCache</a> for usage and configuration documentation.</p>
       <h2>License</h2>
       <p>MIT licence</p>
       <h2>Authors</h2>
-      <p>Kimmo Puputti (first.last@futurice.com)<br/>Jarno Rantanen (first.last@futurice.com)<br/><br/>      </p>
+      <p>Kimmo Puputti (first.last@futurice.com)<br/>Jarno Rantanen (first.last@futurice.com)</p>
       <h2>Contact</h2>
-      <p>Kimmo Puputti (first.last@futurice.com)<br/>      </p>
+      <p>Kimmo Puputti (first.last@futurice.com)</p>
 
       <h2>Demo</h2>
-      <p>Try out the <a href="demo/">interactive demo</a>.</p>
+      <p>Try out the <a href="demo/index.html">interactive demo</a>.</p>
 
       <h2>Download</h2>
       <p>
