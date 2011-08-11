@@ -159,3 +159,5 @@ TODO
 - Fail more gracefully when JSON object or localStorage are not
   supported (by bypassing the cache and just forwarding the requests
   to jQuery).
+
+- Integrate with ``window.navigator.onLine`` if present.
