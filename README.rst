@@ -20,7 +20,7 @@ information.
 Requirements
 ------------
 
-- jQuery (tested with 1.6.2)
+- jQuery (tested with 1.6.2, 1.6.3)
 
 - JSON.parse and JSON.stringify (available in the latest browsers or
   e.g. with json2.js available at
